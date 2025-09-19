@@ -3,43 +3,67 @@
 <head>
   <meta charset="UTF-8">
   <title>Retail Dashboard</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
-  <div class="container">
+<body class="bg-gray-100 font-sans">
 
-    <!-- Sidebar filtros -->
-    <div class="sidebar">
-      <h2>Filtros</h2>
-      <label>Producto:
-        <select id="filterProduct">
-          <option value="All">Todos</option>
-        </select>
-      </label>
-      <label>Canal:
-        <select id="filterChannel">
-          <option value="All">Todos</option>
-          <option value="Web">Web</option>
-          <option value="Store">Store</option>
-        </select>
-      </label>
-    </div>
+<div class="flex h-screen">
 
-    <!-- Contenido principal -->
-    <div class="main-content">
-      <div class="cards">
-        <div class="card" id="totalRevenue">Total Revenue: $0</div>
-        <div class="card" id="totalUnits">Total Units: 0</div>
-        <div class="card" id="avgPrice">Average Price: $0</div>
+  <!-- Sidebar -->
+  <aside class="w-64 bg-gray-800 text-gray-100 p-6 flex flex-col">
+    <h2 class="text-2xl font-bold mb-6">Filtros</h2>
+
+    <label class="mb-4 block">
+      <span class="block mb-1">Producto</span>
+      <select id="filterProduct" class="w-full p-2 rounded bg-gray-700 text-white focus:outline-none">
+        <option value="All">Todos</option>
+      </select>
+    </label>
+
+    <label class="mb-4 block">
+      <span class="block mb-1">Canal</span>
+      <select id="filterChannel" class="w-full p-2 rounded bg-gray-700 text-white focus:outline-none">
+        <option value="All">Todos</option>
+        <option value="Web">Web</option>
+        <option value="Store">Store</option>
+      </select>
+    </label>
+
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-6 overflow-auto">
+
+    <!-- Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center">
+        <span class="text-gray-500">Total Revenue</span>
+        <span id="totalRevenue" class="text-2xl font-bold">$0</span>
       </div>
 
-      <div class="chart-container">
-        <canvas id="salesChart"></canvas>
+      <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center">
+        <span class="text-gray-500">Total Units</span>
+        <span id="totalUnits" class="text-2xl font-bold">0</span>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center">
+        <span class="text-gray-500">Average Price</span>
+        <span id="avgPrice" class="text-2xl font-bold">$0</span>
       </div>
     </div>
-  </div>
 
-  <script src="script.js"></script>
+    <!-- Chart -->
+    <div class="bg-white rounded-lg shadow-lg p-6">
+      <canvas id="salesChart" class="w-full h-96"></canvas>
+    </div>
+
+  </main>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
