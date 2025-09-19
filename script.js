@@ -48,6 +48,7 @@ function updateDashboard() {
   if (productFilter !== 'All') filtered = filtered.filter(d => d.product_name === productFilter);
   if (channelFilter !== 'All') filtered = filtered.filter(d => d.channel === channelFilter);
 
+  // Totales históricos
   const totalRevenue = filtered.reduce((sum,d) => sum + d.revenue, 0);
   const totalUnits = filtered.reduce((sum,d) => sum + d.units, 0);
   const avgPrice = totalUnits ? (totalRevenue / totalUnits).toFixed(2) : 0;
@@ -56,7 +57,42 @@ function updateDashboard() {
   document.getElementById('totalUnits').innerText = `${totalUnits}`;
   document.getElementById('avgPrice').innerText = `$${avgPrice}`;
 
+  // Último mes cerrado
+  const months = [...new Set(filtered.map(d => d.date))].sort();
+  if (months.length >= 2) {
+    const lastMonth = months[months.length - 1];
+    const prevMonth = months[months.length - 2];
+
+    const lastData = filtered.filter(d => d.date === lastMonth);
+    const prevData = filtered.filter(d => d.date === prevMonth);
+
+    const lastRevenue = lastData.reduce((sum,d) => sum + d.revenue, 0);
+    const lastUnits = lastData.reduce((sum,d) => sum + d.units, 0);
+    const lastAvgPrice = lastUnits ? (lastRevenue / lastUnits) : 0;
+
+    const prevRevenue = prevData.reduce((sum,d) => sum + d.revenue, 0);
+    const prevUnits = prevData.reduce((sum,d) => sum + d.units, 0);
+    const prevAvgPrice = prevUnits ? (prevRevenue / prevUnits) : 0;
+
+    // Actualizamos valores
+    document.getElementById('lastMonthRevenue').innerText = `$${lastRevenue.toFixed(2)}`;
+    document.getElementById('lastMonthUnits').innerText = `${lastUnits}`;
+    document.getElementById('lastMonthAvgPrice').innerText = `$${lastAvgPrice.toFixed(2)}`;
+
+    // Indicadores de variación
+    document.getElementById('lastMonthRevenueDelta').innerHTML = deltaHTML(lastRevenue, prevRevenue);
+    document.getElementById('lastMonthUnitsDelta').innerHTML = deltaHTML(lastUnits, prevUnits);
+    document.getElementById('lastMonthAvgPriceDelta').innerHTML = deltaHTML(lastAvgPrice, prevAvgPrice);
+  }
+
   drawChart(filtered);
+}
+
+function deltaHTML(current, previous) {
+  if(previous === 0) return ''; // evitar división por cero
+  const pct = ((current - previous) / previous * 100).toFixed(1);
+  if(pct >= 0) return `<span class="text-green-600 font-semibold">▲ ${pct}%</span>`;
+  else return `<span class="text-red-600 font-semibold">▼ ${Math.abs(pct)}%</span>`;
 }
 
 function drawChart(data) {
@@ -87,9 +123,4 @@ function drawChart(data) {
     options: {
       responsive: true,
       plugins: { legend: { display: true } },
-      scales: { x: { display: true }, y: { display: true } }
-    }
-  });
-}
-
-loadCSV();
+      scales: { x: { display: true
