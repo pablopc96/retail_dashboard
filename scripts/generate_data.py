@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-import json
 from pathlib import Path
 
 np.random.seed(42)
@@ -8,7 +7,7 @@ np.random.seed(42)
 # Carpeta de salida
 output_dir = Path(__file__).parent.parent / "data"
 output_dir.mkdir(exist_ok=True)
-output_file = output_dir / "ventas.json"
+output_file = output_dir / "ventas.csv"  # <-- cambiar a CSV
 
 # Productos y configuración
 products = [
@@ -58,6 +57,6 @@ for date_idx, date in enumerate(date_range, start=1):
 
 df = pd.DataFrame(rows)
 
-# Guardar como JSON
-df.to_json(output_file, orient="records", date_format="iso", indent=2)
+# Guardar como CSV
+df.to_csv(output_file, index=False)
 print(f"Archivo generado: {output_file}")
