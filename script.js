@@ -5,7 +5,6 @@ async function loadCSV() {
   const response = await fetch('data/ventas.csv');
   const text = await response.text();
   parseCSV(text);
-  console.log("Datos cargados:", salesData); // Verificación
   populateFilters();
   updateDashboard();
 }
@@ -19,8 +18,6 @@ function parseCSV(csvText) {
     headers.forEach((h, i) => {
       if (["units","price","revenue","product_id"].includes(h)) {
         obj[h] = parseFloat(cols[i]);
-      } else if(h === "date") {
-        obj[h] = new Date(cols[i]); // Convertimos a objeto Date
       } else {
         obj[h] = cols[i];
       }
@@ -51,7 +48,6 @@ function updateDashboard() {
   if (productFilter !== 'All') filtered = filtered.filter(d => d.product_name === productFilter);
   if (channelFilter !== 'All') filtered = filtered.filter(d => d.channel === channelFilter);
 
-  // Totales históricos
   const totalRevenue = filtered.reduce((sum,d) => sum + d.revenue, 0);
   const totalUnits = filtered.reduce((sum,d) => sum + d.units, 0);
   const avgPrice = totalUnits ? (totalRevenue / totalUnits).toFixed(2) : 0;
@@ -60,56 +56,14 @@ function updateDashboard() {
   document.getElementById('totalUnits').innerText = `${totalUnits}`;
   document.getElementById('avgPrice').innerText = `$${avgPrice}`;
 
-  // Último mes cerrado
-  if(filtered.length > 0){
-    // Agrupamos por mes
-    const groupedByMonth = {};
-    filtered.forEach(d => {
-      const key = `${d.date.getFullYear()}-${(d.date.getMonth()+1).toString().padStart(2,'0')}`;
-      if(!groupedByMonth[key]) groupedByMonth[key] = [];
-      groupedByMonth[key].push(d);
-    });
-
-    const months = Object.keys(groupedByMonth).sort();
-    const lastMonthKey = months[months.length-1];
-    const prevMonthKey = months.length >= 2 ? months[months.length-2] : null;
-
-    const lastData = groupedByMonth[lastMonthKey] || [];
-    const prevData = prevMonthKey ? (groupedByMonth[prevMonthKey] || []) : [];
-
-    const lastRevenue = lastData.reduce((sum,d) => sum + d.revenue, 0);
-    const lastUnits = lastData.reduce((sum,d) => sum + d.units, 0);
-    const lastAvgPrice = lastUnits ? (lastRevenue / lastUnits) : 0;
-
-    const prevRevenue = prevData.reduce((sum,d) => sum + d.revenue, 0);
-    const prevUnits = prevData.reduce((sum,d) => sum + d.units, 0);
-    const prevAvgPrice = prevUnits ? (prevRevenue / prevUnits) : 0;
-
-    document.getElementById('lastMonthRevenue').innerText = `$${lastRevenue.toFixed(2)}`;
-    document.getElementById('lastMonthUnits').innerText = `${lastUnits}`;
-    document.getElementById('lastMonthAvgPrice').innerText = `$${lastAvgPrice.toFixed(2)}`;
-
-    document.getElementById('lastMonthRevenueDelta').innerHTML = deltaHTML(lastRevenue, prevRevenue);
-    document.getElementById('lastMonthUnitsDelta').innerHTML = deltaHTML(lastUnits, prevUnits);
-    document.getElementById('lastMonthAvgPriceDelta').innerHTML = deltaHTML(lastAvgPrice, prevAvgPrice);
-  }
-
   drawChart(filtered);
-}
-
-function deltaHTML(current, previous) {
-  if(previous === 0) return ''; // evitar división por cero
-  const pct = ((current - previous) / previous * 100).toFixed(1);
-  if(pct >= 0) return `<span class="text-green-600 font-semibold">▲ ${pct}%</span>`;
-  else return `<span class="text-red-600 font-semibold">▼ ${Math.abs(pct)}%</span>`;
 }
 
 function drawChart(data) {
   const grouped = {};
   data.forEach(d => {
-    const key = `${d.date.getFullYear()}-${(d.date.getMonth()+1).toString().padStart(2,'0')}`;
-    if(!grouped[key]) grouped[key] = 0;
-    grouped[key] += d.revenue;
+    if (!grouped[d.date]) grouped[d.date] = 0;
+    grouped[d.date] += d.revenue;
   });
 
   const labels = Object.keys(grouped).sort();
