@@ -2,7 +2,6 @@ let salesData = [];
 let chart;
 let showCompact = true;
 
-// cargar CSV
 async function loadCSV() {
   const res = await fetch('data/ventas.csv');
   const text = await res.text();
@@ -28,7 +27,6 @@ function parseCSV(csvText) {
   });
 }
 
-// filtros
 function populateFilters() {
   const productSet = new Set(salesData.map(d=>d.product_name));
   const select = document.getElementById('productFilter');
@@ -59,11 +57,10 @@ function populateFilters() {
     showCompact = !showCompact;
     document.getElementById('toggleNumbers').textContent =
       showCompact ? "Mostrar números exactos" : "Mostrar números compactos";
-    updateDashboard();
+    updateCards(); // solo tarjetas
   });
 }
 
-// helpers de formato
 function formatCompact(num) {
   return Intl.NumberFormat("es-AR", {notation:"compact", maximumFractionDigits:1}).format(num);
 }
@@ -76,8 +73,20 @@ function setValue(id, value, money=false) {
   el.textContent = showCompact ? formatCompact(value) : (money ? "$"+formatExact(value):formatExact(value));
 }
 
-// actualizar dashboard
-function updateDashboard() {
+function setDelta(id, current, previous) {
+  const el = document.getElementById(id);
+  if(previous === 0){
+    el.textContent = '';
+    return;
+  }
+  const delta = ((current - previous) / previous) * 100;
+  const arrow = delta > 0 ? '↑' : delta < 0 ? '↓' : '';
+  const color = delta > 0 ? 'text-green-500' : 'text-red-500';
+  el.className = `text-lg mt-1 ${color}`;
+  el.textContent = `${arrow} ${Math.abs(delta).toFixed(1)}%`;
+}
+
+function updateCards() {
   const productFilter = document.getElementById('productFilter').value;
   const channelFilter = document.getElementById('channelFilter').value;
   const months = parseInt(document.getElementById('monthsFilter').value) || 12;
@@ -90,6 +99,7 @@ function updateDashboard() {
   const lastDates = dates.slice(-months);
   filtered = filtered.filter(d=>lastDates.includes(d.date));
 
+  // totales históricos
   const totalRevenue = filtered.reduce((sum,d)=>sum+d.revenue,0);
   const totalUnits = filtered.reduce((sum,d)=>sum+d.units,0);
   const avgPrice = totalUnits ? totalRevenue/totalUnits : 0;
@@ -98,13 +108,34 @@ function updateDashboard() {
   setValue('customersCard', totalUnits);
   setValue('ordersCard', avgPrice, true);
 
-  drawChart(filtered);
+  // último mes
+  const monthsSet = [...new Set(filtered.map(d=>d.date))].sort();
+  const lastMonth = monthsSet[monthsSet.length-1];
+  const prevMonth = monthsSet[monthsSet.length-2];
+
+  const lastData = filtered.filter(d=>d.date===lastMonth);
+  const prevData = filtered.filter(d=>d.date===prevMonth);
+
+  const lastRevenue = lastData.reduce((sum,d)=>sum+d.revenue,0);
+  const lastUnits = lastData.reduce((sum,d)=>sum+d.units,0);
+  const lastAvgPrice = lastUnits ? lastRevenue/lastUnits : 0;
+
+  const prevRevenue = prevData.reduce((sum,d)=>sum+d.revenue,0);
+  const prevUnits = prevData.reduce((sum,d)=>sum+d.units,0);
+  const prevAvgPrice = prevUnits ? prevRevenue/prevUnits : 0;
+
+  setValue('lastMonthRevenue', lastRevenue, true);
+  setValue('lastMonthUnits', lastUnits);
+  setValue('lastMonthAvgPrice', lastAvgPrice, true);
+
+  setDelta('lastMonthRevenueDelta', lastRevenue, prevRevenue);
+  setDelta('lastMonthUnitsDelta', lastUnits, prevUnits);
+  setDelta('lastMonthAvgPriceDelta', lastAvgPrice, prevAvgPrice);
 }
 
-// chart
-function drawChart(data) {
+function updateChart(filteredData) {
   const grouped = {};
-  data.forEach(d => {
+  filteredData.forEach(d => {
     if(!grouped[d.date]) grouped[d.date]=0;
     grouped[d.date]+=d.revenue;
   });
@@ -133,6 +164,23 @@ function drawChart(data) {
       scales:{x:{display:true},y:{display:true}}
     }
   });
+}
+
+function updateDashboard() {
+  const productFilter = document.getElementById('productFilter').value;
+  const channelFilter = document.getElementById('channelFilter').value;
+  const months = parseInt(document.getElementById('monthsFilter').value) || 12;
+
+  let filtered = [...salesData];
+  if(productFilter !== 'all') filtered = filtered.filter(d=>d.product_name===productFilter);
+  if(channelFilter !== 'all') filtered = filtered.filter(d=>d.channel===channelFilter);
+
+  const dates = [...new Set(filtered.map(d=>d.date))].sort();
+  const lastDates = dates.slice(-months);
+  filtered = filtered.filter(d=>lastDates.includes(d.date));
+
+  updateCards();
+  updateChart(filtered);
 }
 
 loadCSV();
