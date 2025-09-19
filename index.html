@@ -54,7 +54,7 @@
       </button>
     </div>
 
-    <!-- Top Cards -->
+    <!-- Top Cards: totales históricos -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
         <span class="text-gray-500">Total Revenue</span>
@@ -67,6 +67,25 @@
       <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
         <span class="text-gray-500">Average Price</span>
         <span id="ordersCard" class="text-xl md:text-2xl font-bold">$0</span>
+      </div>
+    </div>
+
+    <!-- Tarjetas último mes -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
+        <span class="text-gray-500">Revenue Último Mes</span>
+        <span id="lastMonthRevenue" class="text-xl md:text-2xl font-bold">$0</span>
+        <span id="lastMonthRevenueDelta" class="text-lg mt-1 text-green-500"></span>
+      </div>
+      <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
+        <span class="text-gray-500">Units Último Mes</span>
+        <span id="lastMonthUnits" class="text-xl md:text-2xl font-bold">0</span>
+        <span id="lastMonthUnitsDelta" class="text-lg mt-1 text-green-500"></span>
+      </div>
+      <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
+        <span class="text-gray-500">Avg Price Último Mes</span>
+        <span id="lastMonthAvgPrice" class="text-xl md:text-2xl font-bold">$0</span>
+        <span id="lastMonthAvgPriceDelta" class="text-lg mt-1 text-green-500"></span>
       </div>
     </div>
 
