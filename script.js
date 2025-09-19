@@ -5,6 +5,7 @@ async function loadCSV() {
   const response = await fetch('data/ventas.csv');
   const text = await response.text();
   parseCSV(text);
+  console.log("Datos cargados:", salesData); // Verificación
   populateFilters();
   updateDashboard();
 }
@@ -16,8 +17,10 @@ function parseCSV(csvText) {
     const cols = line.split(',');
     let obj = {};
     headers.forEach((h, i) => {
-      if (h === 'units' || h === 'price' || h === 'revenue' || h === 'product_id') {
+      if (["units","price","revenue","product_id"].includes(h)) {
         obj[h] = parseFloat(cols[i]);
+      } else if(h === "date") {
+        obj[h] = new Date(cols[i]); // Convertimos a objeto Date
       } else {
         obj[h] = cols[i];
       }
@@ -58,13 +61,21 @@ function updateDashboard() {
   document.getElementById('avgPrice').innerText = `$${avgPrice}`;
 
   // Último mes cerrado
-  const months = [...new Set(filtered.map(d => d.date))].sort();
-  if (months.length >= 2) {
-    const lastMonth = months[months.length - 1];
-    const prevMonth = months[months.length - 2];
+  if(filtered.length > 0){
+    // Agrupamos por mes
+    const groupedByMonth = {};
+    filtered.forEach(d => {
+      const key = `${d.date.getFullYear()}-${(d.date.getMonth()+1).toString().padStart(2,'0')}`;
+      if(!groupedByMonth[key]) groupedByMonth[key] = [];
+      groupedByMonth[key].push(d);
+    });
 
-    const lastData = filtered.filter(d => d.date === lastMonth);
-    const prevData = filtered.filter(d => d.date === prevMonth);
+    const months = Object.keys(groupedByMonth).sort();
+    const lastMonthKey = months[months.length-1];
+    const prevMonthKey = months.length >= 2 ? months[months.length-2] : null;
+
+    const lastData = groupedByMonth[lastMonthKey] || [];
+    const prevData = prevMonthKey ? (groupedByMonth[prevMonthKey] || []) : [];
 
     const lastRevenue = lastData.reduce((sum,d) => sum + d.revenue, 0);
     const lastUnits = lastData.reduce((sum,d) => sum + d.units, 0);
@@ -74,12 +85,10 @@ function updateDashboard() {
     const prevUnits = prevData.reduce((sum,d) => sum + d.units, 0);
     const prevAvgPrice = prevUnits ? (prevRevenue / prevUnits) : 0;
 
-    // Actualizamos valores
     document.getElementById('lastMonthRevenue').innerText = `$${lastRevenue.toFixed(2)}`;
     document.getElementById('lastMonthUnits').innerText = `${lastUnits}`;
     document.getElementById('lastMonthAvgPrice').innerText = `$${lastAvgPrice.toFixed(2)}`;
 
-    // Indicadores de variación
     document.getElementById('lastMonthRevenueDelta').innerHTML = deltaHTML(lastRevenue, prevRevenue);
     document.getElementById('lastMonthUnitsDelta').innerHTML = deltaHTML(lastUnits, prevUnits);
     document.getElementById('lastMonthAvgPriceDelta').innerHTML = deltaHTML(lastAvgPrice, prevAvgPrice);
@@ -98,14 +107,15 @@ function deltaHTML(current, previous) {
 function drawChart(data) {
   const grouped = {};
   data.forEach(d => {
-    if (!grouped[d.date]) grouped[d.date] = 0;
-    grouped[d.date] += d.revenue;
+    const key = `${d.date.getFullYear()}-${(d.date.getMonth()+1).toString().padStart(2,'0')}`;
+    if(!grouped[key]) grouped[key] = 0;
+    grouped[key] += d.revenue;
   });
 
   const labels = Object.keys(grouped).sort();
   const values = labels.map(l => grouped[l]);
 
-  if (chart) chart.destroy();
+  if(chart) chart.destroy();
   const ctx = document.getElementById('salesChart').getContext('2d');
   chart = new Chart(ctx, {
     type: 'line',
@@ -120,7 +130,8 @@ function drawChart(data) {
         tension: 0.3
       }]
     },
-    options: {
-      responsive: true,
-      plugins: { legend: { display: true } },
-      scales: { x: { display: true
+    options: { responsive:true, plugins:{legend:{display:true}} }
+  });
+}
+
+loadCSV();
