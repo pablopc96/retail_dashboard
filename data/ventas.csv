@@ -1,0 +1,769 @@
+date,product_id,product_name,channel,store,units,price,revenue
+2021-10-01,1,Smartphone,Web,Web,117,757.67,88647.28
+2021-10-01,1,Smartphone,Store,Sucursal A,80,753.31,60264.48
+2021-10-01,1,Smartphone,Store,Sucursal B,94,683.57,64255.43
+2021-10-01,1,Smartphone,Store,Sucursal C,81,718.99,58238.16
+2021-10-01,2,Laptop,Web,Web,60,1156.5,69390.3
+2021-10-01,2,Laptop,Store,Sucursal A,51,1166.26,59479.4
+2021-10-01,2,Laptop,Store,Sucursal B,44,1287.94,56669.31
+2021-10-01,2,Laptop,Store,Sucursal C,42,1186.45,49831.04
+2021-10-01,3,Headphones,Web,Web,206,148.87,30666.71
+2021-10-01,3,Headphones,Store,Sucursal A,144,152.82,22005.75
+2021-10-01,3,Headphones,Store,Sucursal B,158,149.9,23684.01
+2021-10-01,3,Headphones,Store,Sucursal C,142,142.07,20173.54
+2021-10-01,4,Smartwatch,Web,Web,91,295.08,26852.03
+2021-10-01,4,Smartwatch,Store,Sucursal A,75,302.95,22721.47
+2021-10-01,4,Smartwatch,Store,Sucursal B,59,298.27,17597.65
+2021-10-01,4,Smartwatch,Store,Sucursal C,70,295.48,20683.84
+2021-11-01,1,Smartphone,Web,Web,134,747.03,100101.57
+2021-11-01,1,Smartphone,Store,Sucursal A,80,638.29,51063.49
+2021-11-01,1,Smartphone,Store,Sucursal B,100,736.08,73608.5
+2021-11-01,1,Smartphone,Store,Sucursal C,100,732.59,73259.48
+2021-11-01,2,Laptop,Web,Web,62,1279.88,79352.3
+2021-11-01,2,Laptop,Store,Sucursal A,45,1258.53,56633.97
+2021-11-01,2,Laptop,Store,Sucursal B,45,1248.75,56193.82
+2021-11-01,2,Laptop,Store,Sucursal C,59,1281.37,75601.09
+2021-11-01,3,Headphones,Web,Web,184,160.21,29478.73
+2021-11-01,3,Headphones,Store,Sucursal A,163,161.54,26330.25
+2021-11-01,3,Headphones,Store,Sucursal B,154,150.65,23200.54
+2021-11-01,3,Headphones,Store,Sucursal C,146,147.76,21572.59
+2021-11-01,4,Smartwatch,Web,Web,114,337.17,38437.2
+2021-11-01,4,Smartwatch,Store,Sucursal A,66,292.23,19286.91
+2021-11-01,4,Smartwatch,Store,Sucursal B,68,313.73,21333.71
+2021-11-01,4,Smartwatch,Store,Sucursal C,82,304.93,25004.36
+2021-12-01,1,Smartphone,Web,Web,140,710.43,99459.94
+2021-12-01,1,Smartphone,Store,Sucursal A,84,688.53,57836.67
+2021-12-01,1,Smartphone,Store,Sucursal B,90,688.0,61920.45
+2021-12-01,1,Smartphone,Store,Sucursal C,113,671.92,75926.99
+2021-12-01,2,Laptop,Web,Web,66,1275.45,84179.9
+2021-12-01,2,Laptop,Store,Sucursal A,68,1195.53,81296.26
+2021-12-01,2,Laptop,Store,Sucursal B,49,1203.61,58977.08
+2021-12-01,2,Laptop,Store,Sucursal C,34,1347.79,45825.01
+2021-12-01,3,Headphones,Web,Web,229,157.24,36007.88
+2021-12-01,3,Headphones,Store,Sucursal A,161,141.23,22738.82
+2021-12-01,3,Headphones,Store,Sucursal B,144,160.52,23115.02
+2021-12-01,3,Headphones,Store,Sucursal C,159,139.49,22178.29
+2021-12-01,4,Smartwatch,Web,Web,83,300.14,24911.78
+2021-12-01,4,Smartwatch,Store,Sucursal A,79,291.51,23028.94
+2021-12-01,4,Smartwatch,Store,Sucursal B,74,284.07,21020.84
+2021-12-01,4,Smartwatch,Store,Sucursal C,79,307.1,24261.21
+2022-01-01,1,Smartphone,Web,Web,147,707.59,104015.16
+2022-01-01,1,Smartphone,Store,Sucursal A,111,688.73,76448.79
+2022-01-01,1,Smartphone,Store,Sucursal B,86,707.96,60884.65
+2022-01-01,1,Smartphone,Store,Sucursal C,94,745.75,70100.5
+2022-01-01,2,Laptop,Web,Web,54,1275.59,68882.02
+2022-01-01,2,Laptop,Store,Sucursal A,46,1246.91,57357.83
+2022-01-01,2,Laptop,Store,Sucursal B,60,1159.2,69551.91
+2022-01-01,2,Laptop,Store,Sucursal C,42,1213.94,50985.28
+2022-01-01,3,Headphones,Web,Web,212,159.7,33855.99
+2022-01-01,3,Headphones,Store,Sucursal A,158,144.64,22853.49
+2022-01-01,3,Headphones,Store,Sucursal B,162,142.69,23115.76
+2022-01-01,3,Headphones,Store,Sucursal C,149,155.9,23229.57
+2022-01-01,4,Smartwatch,Web,Web,104,327.33,34042.41
+2022-01-01,4,Smartwatch,Store,Sucursal A,61,328.45,20035.57
+2022-01-01,4,Smartwatch,Store,Sucursal B,69,298.84,20620.2
+2022-01-01,4,Smartwatch,Store,Sucursal C,87,305.12,26545.2
+2022-02-01,1,Smartphone,Web,Web,137,725.74,99425.97
+2022-02-01,1,Smartphone,Store,Sucursal A,85,795.21,67592.5
+2022-02-01,1,Smartphone,Store,Sucursal B,88,662.52,58301.65
+2022-02-01,1,Smartphone,Store,Sucursal C,111,716.89,79574.41
+2022-02-01,2,Laptop,Web,Web,65,1209.19,78597.5
+2022-02-01,2,Laptop,Store,Sucursal A,59,1109.11,65437.44
+2022-02-01,2,Laptop,Store,Sucursal B,42,1210.39,50836.42
+2022-02-01,2,Laptop,Store,Sucursal C,52,1223.12,63602.19
+2022-02-01,3,Headphones,Web,Web,192,160.18,30755.21
+2022-02-01,3,Headphones,Store,Sucursal A,165,154.21,25443.97
+2022-02-01,3,Headphones,Store,Sucursal B,152,153.86,23387.14
+2022-02-01,3,Headphones,Store,Sucursal C,158,153.85,24308.84
+2022-02-01,4,Smartwatch,Web,Web,110,329.31,36224.1
+2022-02-01,4,Smartwatch,Store,Sucursal A,88,309.77,27259.84
+2022-02-01,4,Smartwatch,Store,Sucursal B,72,292.72,21075.81
+2022-02-01,4,Smartwatch,Store,Sucursal C,75,301.23,22592.11
+2022-03-01,1,Smartphone,Web,Web,120,718.48,86217.89
+2022-03-01,1,Smartphone,Store,Sucursal A,82,738.11,60525.29
+2022-03-01,1,Smartphone,Store,Sucursal B,104,674.44,70141.47
+2022-03-01,1,Smartphone,Store,Sucursal C,74,707.58,52360.63
+2022-03-01,2,Laptop,Web,Web,69,1138.49,78555.91
+2022-03-01,2,Laptop,Store,Sucursal A,58,1211.19,70248.86
+2022-03-01,2,Laptop,Store,Sucursal B,50,1230.3,61514.96
+2022-03-01,2,Laptop,Store,Sucursal C,49,1251.95,61345.32
+2022-03-01,3,Headphones,Web,Web,195,170.74,33294.48
+2022-03-01,3,Headphones,Store,Sucursal A,165,153.04,25251.16
+2022-03-01,3,Headphones,Store,Sucursal B,161,138.6,22315.36
+2022-03-01,3,Headphones,Store,Sucursal C,154,146.37,22540.71
+2022-03-01,4,Smartwatch,Web,Web,78,321.66,25089.27
+2022-03-01,4,Smartwatch,Store,Sucursal A,76,311.62,23683.08
+2022-03-01,4,Smartwatch,Store,Sucursal B,76,296.21,22512.07
+2022-03-01,4,Smartwatch,Store,Sucursal C,74,281.28,20814.96
+2022-04-01,1,Smartphone,Web,Web,133,785.44,104464.13
+2022-04-01,1,Smartphone,Store,Sucursal A,96,649.74,62375.5
+2022-04-01,1,Smartphone,Store,Sucursal B,101,706.97,71403.68
+2022-04-01,1,Smartphone,Store,Sucursal C,116,678.99,78763.12
+2022-04-01,2,Laptop,Web,Web,66,1387.98,91606.81
+2022-04-01,2,Laptop,Store,Sucursal A,66,1082.87,71469.73
+2022-04-01,2,Laptop,Store,Sucursal B,44,1216.86,53541.82
+2022-04-01,2,Laptop,Store,Sucursal C,38,1162.64,44180.25
+2022-04-01,3,Headphones,Web,Web,231,153.08,35361.43
+2022-04-01,3,Headphones,Store,Sucursal A,143,156.37,22361.2
+2022-04-01,3,Headphones,Store,Sucursal B,165,156.1,25755.92
+2022-04-01,3,Headphones,Store,Sucursal C,152,154.72,23517.78
+2022-04-01,4,Smartwatch,Web,Web,111,314.69,34930.2
+2022-04-01,4,Smartwatch,Store,Sucursal A,74,301.76,22330.23
+2022-04-01,4,Smartwatch,Store,Sucursal B,73,296.73,21661.64
+2022-04-01,4,Smartwatch,Store,Sucursal C,84,316.48,26584.46
+2022-05-01,1,Smartphone,Web,Web,113,780.69,88218.17
+2022-05-01,1,Smartphone,Store,Sucursal A,92,700.74,64467.63
+2022-05-01,1,Smartphone,Store,Sucursal B,94,711.35,66866.51
+2022-05-01,1,Smartphone,Store,Sucursal C,119,695.44,82757.95
+2022-05-01,2,Laptop,Web,Web,72,1199.64,86374.0
+2022-05-01,2,Laptop,Store,Sucursal A,56,1127.15,63120.33
+2022-05-01,2,Laptop,Store,Sucursal B,40,1204.55,48181.93
+2022-05-01,2,Laptop,Store,Sucursal C,51,1159.37,59127.89
+2022-05-01,3,Headphones,Web,Web,209,160.6,33564.77
+2022-05-01,3,Headphones,Store,Sucursal A,166,145.77,24198.16
+2022-05-01,3,Headphones,Store,Sucursal B,141,146.47,20651.88
+2022-05-01,3,Headphones,Store,Sucursal C,157,151.74,23823.24
+2022-05-01,4,Smartwatch,Web,Web,100,319.66,31966.36
+2022-05-01,4,Smartwatch,Store,Sucursal A,76,322.13,24481.91
+2022-05-01,4,Smartwatch,Store,Sucursal B,65,299.72,19481.95
+2022-05-01,4,Smartwatch,Store,Sucursal C,59,295.67,17444.54
+2022-06-01,1,Smartphone,Web,Web,115,753.18,86615.37
+2022-06-01,1,Smartphone,Store,Sucursal A,124,753.65,93452.09
+2022-06-01,1,Smartphone,Store,Sucursal B,92,707.84,65121.58
+2022-06-01,1,Smartphone,Store,Sucursal C,80,700.44,56035.26
+2022-06-01,2,Laptop,Web,Web,73,1389.19,101410.94
+2022-06-01,2,Laptop,Store,Sucursal A,54,1153.96,62313.79
+2022-06-01,2,Laptop,Store,Sucursal B,35,1331.39,46598.59
+2022-06-01,2,Laptop,Store,Sucursal C,47,1151.5,54120.6
+2022-06-01,3,Headphones,Web,Web,216,151.81,32790.21
+2022-06-01,3,Headphones,Store,Sucursal A,171,151.13,25842.88
+2022-06-01,3,Headphones,Store,Sucursal B,156,143.26,22348.85
+2022-06-01,3,Headphones,Store,Sucursal C,184,153.69,28278.85
+2022-06-01,4,Smartwatch,Web,Web,108,332.69,35930.69
+2022-06-01,4,Smartwatch,Store,Sucursal A,81,292.96,23729.95
+2022-06-01,4,Smartwatch,Store,Sucursal B,88,276.08,24295.36
+2022-06-01,4,Smartwatch,Store,Sucursal C,89,291.01,25899.83
+2022-07-01,1,Smartphone,Web,Web,130,739.21,96097.35
+2022-07-01,1,Smartphone,Store,Sucursal A,90,718.01,64620.48
+2022-07-01,1,Smartphone,Store,Sucursal B,102,711.63,72586.36
+2022-07-01,1,Smartphone,Store,Sucursal C,100,673.8,67380.3
+2022-07-01,2,Laptop,Web,Web,71,1383.64,98238.79
+2022-07-01,2,Laptop,Store,Sucursal A,63,1305.32,82235.19
+2022-07-01,2,Laptop,Store,Sucursal B,43,1238.72,53265.07
+2022-07-01,2,Laptop,Store,Sucursal C,57,1282.12,73080.72
+2022-07-01,3,Headphones,Web,Web,201,165.44,33253.07
+2022-07-01,3,Headphones,Store,Sucursal A,161,136.81,22026.32
+2022-07-01,3,Headphones,Store,Sucursal B,185,161.27,29834.52
+2022-07-01,3,Headphones,Store,Sucursal C,161,150.56,24239.47
+2022-07-01,4,Smartwatch,Web,Web,105,320.76,33679.9
+2022-07-01,4,Smartwatch,Store,Sucursal A,79,299.51,23661.26
+2022-07-01,4,Smartwatch,Store,Sucursal B,83,305.5,25356.41
+2022-07-01,4,Smartwatch,Store,Sucursal C,70,285.9,20013.13
+2022-08-01,1,Smartphone,Web,Web,150,700.5,105074.94
+2022-08-01,1,Smartphone,Store,Sucursal A,90,717.64,64587.75
+2022-08-01,1,Smartphone,Store,Sucursal B,89,696.25,61966.6
+2022-08-01,1,Smartphone,Store,Sucursal C,90,663.77,59738.99
+2022-08-01,2,Laptop,Web,Web,71,1218.02,86479.17
+2022-08-01,2,Laptop,Store,Sucursal A,39,1212.84,47300.71
+2022-08-01,2,Laptop,Store,Sucursal B,60,1168.17,70090.2
+2022-08-01,2,Laptop,Store,Sucursal C,50,1165.45,58272.55
+2022-08-01,3,Headphones,Web,Web,227,169.84,38553.06
+2022-08-01,3,Headphones,Store,Sucursal A,131,148.13,19405.32
+2022-08-01,3,Headphones,Store,Sucursal B,175,173.09,30291.03
+2022-08-01,3,Headphones,Store,Sucursal C,148,158.4,23442.73
+2022-08-01,4,Smartwatch,Web,Web,107,303.65,32491.06
+2022-08-01,4,Smartwatch,Store,Sucursal A,72,278.67,20063.97
+2022-08-01,4,Smartwatch,Store,Sucursal B,68,325.31,22120.88
+2022-08-01,4,Smartwatch,Store,Sucursal C,88,313.22,27563.76
+2022-09-01,1,Smartphone,Web,Web,115,788.31,90655.57
+2022-09-01,1,Smartphone,Store,Sucursal A,99,718.86,71167.32
+2022-09-01,1,Smartphone,Store,Sucursal B,94,732.42,68847.12
+2022-09-01,1,Smartphone,Store,Sucursal C,104,766.83,79750.28
+2022-09-01,2,Laptop,Web,Web,59,1220.96,72036.73
+2022-09-01,2,Laptop,Store,Sucursal A,46,1170.77,53855.53
+2022-09-01,2,Laptop,Store,Sucursal B,46,1202.91,55333.92
+2022-09-01,2,Laptop,Store,Sucursal C,52,1150.14,59807.44
+2022-09-01,3,Headphones,Web,Web,203,153.17,31094.37
+2022-09-01,3,Headphones,Store,Sucursal A,154,155.67,23972.48
+2022-09-01,3,Headphones,Store,Sucursal B,192,137.48,26396.06
+2022-09-01,3,Headphones,Store,Sucursal C,179,154.08,27579.46
+2022-09-01,4,Smartwatch,Web,Web,102,290.59,29639.86
+2022-09-01,4,Smartwatch,Store,Sucursal A,68,300.72,20449.05
+2022-09-01,4,Smartwatch,Store,Sucursal B,75,299.01,22425.66
+2022-09-01,4,Smartwatch,Store,Sucursal C,81,281.83,22828.62
+2022-10-01,1,Smartphone,Web,Web,130,770.22,100128.63
+2022-10-01,1,Smartphone,Store,Sucursal A,94,679.81,63902.03
+2022-10-01,1,Smartphone,Store,Sucursal B,110,613.49,67484.17
+2022-10-01,1,Smartphone,Store,Sucursal C,97,672.11,65194.54
+2022-10-01,2,Laptop,Web,Web,61,1265.2,77176.92
+2022-10-01,2,Laptop,Store,Sucursal A,56,1190.66,66676.92
+2022-10-01,2,Laptop,Store,Sucursal B,45,1170.74,52683.46
+2022-10-01,2,Laptop,Store,Sucursal C,46,1174.05,54006.14
+2022-10-01,3,Headphones,Web,Web,233,164.03,38219.79
+2022-10-01,3,Headphones,Store,Sucursal A,165,147.55,24346.55
+2022-10-01,3,Headphones,Store,Sucursal B,167,135.97,22706.83
+2022-10-01,3,Headphones,Store,Sucursal C,179,147.36,26378.09
+2022-10-01,4,Smartwatch,Web,Web,100,327.44,32744.11
+2022-10-01,4,Smartwatch,Store,Sucursal A,96,266.83,25615.97
+2022-10-01,4,Smartwatch,Store,Sucursal B,69,277.82,19169.66
+2022-10-01,4,Smartwatch,Store,Sucursal C,70,317.16,22200.94
+2022-11-01,1,Smartphone,Web,Web,141,741.37,104532.51
+2022-11-01,1,Smartphone,Store,Sucursal A,91,708.69,64490.58
+2022-11-01,1,Smartphone,Store,Sucursal B,95,702.5,66737.96
+2022-11-01,1,Smartphone,Store,Sucursal C,98,683.28,66961.63
+2022-11-01,2,Laptop,Web,Web,61,1243.81,75872.26
+2022-11-01,2,Laptop,Store,Sucursal A,62,1141.27,70759.0
+2022-11-01,2,Laptop,Store,Sucursal B,48,1252.18,60104.47
+2022-11-01,2,Laptop,Store,Sucursal C,59,1281.34,75598.96
+2022-11-01,3,Headphones,Web,Web,216,144.16,31138.47
+2022-11-01,3,Headphones,Store,Sucursal A,170,161.22,27407.46
+2022-11-01,3,Headphones,Store,Sucursal B,156,168.34,26261.53
+2022-11-01,3,Headphones,Store,Sucursal C,196,150.97,29589.96
+2022-11-01,4,Smartwatch,Web,Web,116,343.23,39814.72
+2022-11-01,4,Smartwatch,Store,Sucursal A,80,320.18,25614.5
+2022-11-01,4,Smartwatch,Store,Sucursal B,99,285.16,28230.44
+2022-11-01,4,Smartwatch,Store,Sucursal C,70,298.11,20867.92
+2022-12-01,1,Smartphone,Web,Web,153,675.76,103391.85
+2022-12-01,1,Smartphone,Store,Sucursal A,82,753.53,61789.81
+2022-12-01,1,Smartphone,Store,Sucursal B,113,664.58,75097.13
+2022-12-01,1,Smartphone,Store,Sucursal C,105,642.08,67418.4
+2022-12-01,2,Laptop,Web,Web,70,1239.85,86789.7
+2022-12-01,2,Laptop,Store,Sucursal A,49,1300.14,63706.92
+2022-12-01,2,Laptop,Store,Sucursal B,46,1038.19,47756.59
+2022-12-01,2,Laptop,Store,Sucursal C,68,1196.74,81378.48
+2022-12-01,3,Headphones,Web,Web,233,155.48,36227.62
+2022-12-01,3,Headphones,Store,Sucursal A,173,141.7,24514.28
+2022-12-01,3,Headphones,Store,Sucursal B,147,151.49,22268.39
+2022-12-01,3,Headphones,Store,Sucursal C,160,148.92,23826.77
+2022-12-01,4,Smartwatch,Web,Web,112,311.18,34851.64
+2022-12-01,4,Smartwatch,Store,Sucursal A,83,322.56,26772.47
+2022-12-01,4,Smartwatch,Store,Sucursal B,80,294.86,23588.77
+2022-12-01,4,Smartwatch,Store,Sucursal C,79,294.43,23259.84
+2023-01-01,1,Smartphone,Web,Web,144,767.75,110555.82
+2023-01-01,1,Smartphone,Store,Sucursal A,96,744.5,71472.43
+2023-01-01,1,Smartphone,Store,Sucursal B,114,657.23,74923.71
+2023-01-01,1,Smartphone,Store,Sucursal C,89,724.95,64520.99
+2023-01-01,2,Laptop,Web,Web,80,1238.34,99067.36
+2023-01-01,2,Laptop,Store,Sucursal A,59,1269.56,74904.03
+2023-01-01,2,Laptop,Store,Sucursal B,51,1219.57,62197.97
+2023-01-01,2,Laptop,Store,Sucursal C,54,1124.93,60746.39
+2023-01-01,3,Headphones,Web,Web,248,152.22,37749.92
+2023-01-01,3,Headphones,Store,Sucursal A,177,139.44,24680.27
+2023-01-01,3,Headphones,Store,Sucursal B,179,134.39,24055.01
+2023-01-01,3,Headphones,Store,Sucursal C,166,162.72,27012.09
+2023-01-01,4,Smartwatch,Web,Web,120,314.44,37732.26
+2023-01-01,4,Smartwatch,Store,Sucursal A,97,316.55,30705.3
+2023-01-01,4,Smartwatch,Store,Sucursal B,81,304.62,24673.98
+2023-01-01,4,Smartwatch,Store,Sucursal C,87,274.35,23868.23
+2023-02-01,1,Smartphone,Web,Web,126,735.65,92691.29
+2023-02-01,1,Smartphone,Store,Sucursal A,94,712.17,66943.54
+2023-02-01,1,Smartphone,Store,Sucursal B,91,714.29,65000.29
+2023-02-01,1,Smartphone,Store,Sucursal C,110,640.41,70445.05
+2023-02-01,2,Laptop,Web,Web,67,1275.36,85449.24
+2023-02-01,2,Laptop,Store,Sucursal A,58,1258.96,73019.76
+2023-02-01,2,Laptop,Store,Sucursal B,54,1162.51,62775.59
+2023-02-01,2,Laptop,Store,Sucursal C,48,1201.57,57675.14
+2023-02-01,3,Headphones,Web,Web,208,152.91,31806.03
+2023-02-01,3,Headphones,Store,Sucursal A,167,139.45,23288.16
+2023-02-01,3,Headphones,Store,Sucursal B,184,142.88,26289.83
+2023-02-01,3,Headphones,Store,Sucursal C,182,169.74,30893.2
+2023-02-01,4,Smartwatch,Web,Web,120,306.37,36763.85
+2023-02-01,4,Smartwatch,Store,Sucursal A,84,301.83,25353.73
+2023-02-01,4,Smartwatch,Store,Sucursal B,80,299.48,23958.01
+2023-02-01,4,Smartwatch,Store,Sucursal C,89,326.56,29064.02
+2023-03-01,1,Smartphone,Web,Web,132,757.13,99941.72
+2023-03-01,1,Smartphone,Store,Sucursal A,99,734.04,72669.9
+2023-03-01,1,Smartphone,Store,Sucursal B,102,697.39,71134.27
+2023-03-01,1,Smartphone,Store,Sucursal C,96,721.72,69285.46
+2023-03-01,2,Laptop,Web,Web,87,1293.59,112542.11
+2023-03-01,2,Laptop,Store,Sucursal A,61,1264.85,77155.66
+2023-03-01,2,Laptop,Store,Sucursal B,51,1225.78,62514.63
+2023-03-01,2,Laptop,Store,Sucursal C,49,1212.46,59410.6
+2023-03-01,3,Headphones,Web,Web,262,149.39,39140.72
+2023-03-01,3,Headphones,Store,Sucursal A,205,157.9,32369.22
+2023-03-01,3,Headphones,Store,Sucursal B,194,157.04,30465.2
+2023-03-01,3,Headphones,Store,Sucursal C,166,146.13,24257.52
+2023-03-01,4,Smartwatch,Web,Web,94,333.84,31380.62
+2023-03-01,4,Smartwatch,Store,Sucursal A,67,286.58,19200.92
+2023-03-01,4,Smartwatch,Store,Sucursal B,86,315.48,27131.08
+2023-03-01,4,Smartwatch,Store,Sucursal C,98,277.72,27216.23
+2023-04-01,1,Smartphone,Web,Web,133,737.88,98138.03
+2023-04-01,1,Smartphone,Store,Sucursal A,128,737.29,94373.35
+2023-04-01,1,Smartphone,Store,Sucursal B,116,780.46,90533.53
+2023-04-01,1,Smartphone,Store,Sucursal C,116,687.3,79726.88
+2023-04-01,2,Laptop,Web,Web,74,1234.79,91374.37
+2023-04-01,2,Laptop,Store,Sucursal A,54,1183.09,63887.02
+2023-04-01,2,Laptop,Store,Sucursal B,52,1197.92,62291.78
+2023-04-01,2,Laptop,Store,Sucursal C,54,1214.05,65558.86
+2023-04-01,3,Headphones,Web,Web,252,164.88,41550.37
+2023-04-01,3,Headphones,Store,Sucursal A,207,148.4,30717.78
+2023-04-01,3,Headphones,Store,Sucursal B,183,151.25,27678.46
+2023-04-01,3,Headphones,Store,Sucursal C,183,153.69,28125.89
+2023-04-01,4,Smartwatch,Web,Web,105,305.65,32093.55
+2023-04-01,4,Smartwatch,Store,Sucursal A,94,291.67,27416.78
+2023-04-01,4,Smartwatch,Store,Sucursal B,83,287.51,23863.72
+2023-04-01,4,Smartwatch,Store,Sucursal C,95,307.07,29171.77
+2023-05-01,1,Smartphone,Web,Web,134,789.16,105747.8
+2023-05-01,1,Smartphone,Store,Sucursal A,100,762.86,76285.57
+2023-05-01,1,Smartphone,Store,Sucursal B,121,723.05,87488.93
+2023-05-01,1,Smartphone,Store,Sucursal C,91,770.36,70102.5
+2023-05-01,2,Laptop,Web,Web,73,1258.01,91834.9
+2023-05-01,2,Laptop,Store,Sucursal A,45,1307.67,58845.31
+2023-05-01,2,Laptop,Store,Sucursal B,62,1199.01,74338.91
+2023-05-01,2,Laptop,Store,Sucursal C,57,1271.3,72464.3
+2023-05-01,3,Headphones,Web,Web,256,162.61,41629.23
+2023-05-01,3,Headphones,Store,Sucursal A,170,163.85,27854.55
+2023-05-01,3,Headphones,Store,Sucursal B,193,156.15,30137.65
+2023-05-01,3,Headphones,Store,Sucursal C,188,153.8,28915.26
+2023-05-01,4,Smartwatch,Web,Web,119,312.49,37186.69
+2023-05-01,4,Smartwatch,Store,Sucursal A,82,302.2,24780.46
+2023-05-01,4,Smartwatch,Store,Sucursal B,76,300.43,22832.77
+2023-05-01,4,Smartwatch,Store,Sucursal C,90,319.18,28725.91
+2023-06-01,1,Smartphone,Web,Web,150,724.23,108634.16
+2023-06-01,1,Smartphone,Store,Sucursal A,117,707.67,82797.42
+2023-06-01,1,Smartphone,Store,Sucursal B,137,721.28,98814.86
+2023-06-01,1,Smartphone,Store,Sucursal C,115,706.53,81251.1
+2023-06-01,2,Laptop,Web,Web,72,1267.98,91294.43
+2023-06-01,2,Laptop,Store,Sucursal A,55,1157.99,63689.6
+2023-06-01,2,Laptop,Store,Sucursal B,64,1293.93,82811.61
+2023-06-01,2,Laptop,Store,Sucursal C,62,1196.05,74155.41
+2023-06-01,3,Headphones,Web,Web,239,160.8,38431.23
+2023-06-01,3,Headphones,Store,Sucursal A,189,146.23,27638.34
+2023-06-01,3,Headphones,Store,Sucursal B,159,140.4,22323.24
+2023-06-01,3,Headphones,Store,Sucursal C,212,156.54,33187.21
+2023-06-01,4,Smartwatch,Web,Web,114,342.7,39067.75
+2023-06-01,4,Smartwatch,Store,Sucursal A,84,283.95,23851.69
+2023-06-01,4,Smartwatch,Store,Sucursal B,101,281.23,28403.92
+2023-06-01,4,Smartwatch,Store,Sucursal C,99,321.66,31843.99
+2023-07-01,1,Smartphone,Web,Web,182,747.0,135953.16
+2023-07-01,1,Smartphone,Store,Sucursal A,118,715.99,84486.39
+2023-07-01,1,Smartphone,Store,Sucursal B,96,706.88,67860.31
+2023-07-01,1,Smartphone,Store,Sucursal C,120,724.82,86977.82
+2023-07-01,2,Laptop,Web,Web,66,1219.42,80481.49
+2023-07-01,2,Laptop,Store,Sucursal A,51,1308.06,66710.88
+2023-07-01,2,Laptop,Store,Sucursal B,44,1250.44,55019.3
+2023-07-01,2,Laptop,Store,Sucursal C,54,1160.84,62685.5
+2023-07-01,3,Headphones,Web,Web,239,145.62,34803.35
+2023-07-01,3,Headphones,Store,Sucursal A,191,155.7,29739.29
+2023-07-01,3,Headphones,Store,Sucursal B,195,142.75,27835.8
+2023-07-01,3,Headphones,Store,Sucursal C,166,149.64,24840.6
+2023-07-01,4,Smartwatch,Web,Web,121,311.69,37713.95
+2023-07-01,4,Smartwatch,Store,Sucursal A,83,300.4,24933.47
+2023-07-01,4,Smartwatch,Store,Sucursal B,72,284.98,20518.25
+2023-07-01,4,Smartwatch,Store,Sucursal C,90,295.78,26620.51
+2023-08-01,1,Smartphone,Web,Web,159,783.98,124652.41
+2023-08-01,1,Smartphone,Store,Sucursal A,88,732.36,64447.87
+2023-08-01,1,Smartphone,Store,Sucursal B,117,731.33,85565.82
+2023-08-01,1,Smartphone,Store,Sucursal C,106,722.23,76556.49
+2023-08-01,2,Laptop,Web,Web,80,1384.52,110761.25
+2023-08-01,2,Laptop,Store,Sucursal A,60,1158.65,69518.92
+2023-08-01,2,Laptop,Store,Sucursal B,46,1160.91,53402.09
+2023-08-01,2,Laptop,Store,Sucursal C,69,1170.97,80796.71
+2023-08-01,3,Headphones,Web,Web,230,157.32,36182.99
+2023-08-01,3,Headphones,Store,Sucursal A,187,166.07,31054.53
+2023-08-01,3,Headphones,Store,Sucursal B,171,148.07,25319.91
+2023-08-01,3,Headphones,Store,Sucursal C,202,137.49,27772.1
+2023-08-01,4,Smartwatch,Web,Web,126,296.61,37373.3
+2023-08-01,4,Smartwatch,Store,Sucursal A,101,278.03,28081.47
+2023-08-01,4,Smartwatch,Store,Sucursal B,87,316.18,27507.68
+2023-08-01,4,Smartwatch,Store,Sucursal C,103,299.42,30840.5
+2023-09-01,1,Smartphone,Web,Web,140,786.68,110135.05
+2023-09-01,1,Smartphone,Store,Sucursal A,119,748.3,89048.08
+2023-09-01,1,Smartphone,Store,Sucursal B,118,680.74,80327.24
+2023-09-01,1,Smartphone,Store,Sucursal C,145,676.49,98091.51
+2023-09-01,2,Laptop,Web,Web,90,1292.62,116335.44
+2023-09-01,2,Laptop,Store,Sucursal A,58,1177.76,68310.26
+2023-09-01,2,Laptop,Store,Sucursal B,56,1178.25,65982.2
+2023-09-01,2,Laptop,Store,Sucursal C,83,1132.82,94024.04
+2023-09-01,3,Headphones,Web,Web,255,153.99,39268.02
+2023-09-01,3,Headphones,Store,Sucursal A,175,152.6,26704.79
+2023-09-01,3,Headphones,Store,Sucursal B,171,157.47,26927.71
+2023-09-01,3,Headphones,Store,Sucursal C,183,146.3,26772.32
+2023-09-01,4,Smartwatch,Web,Web,123,309.77,38101.74
+2023-09-01,4,Smartwatch,Store,Sucursal A,94,294.76,27707.55
+2023-09-01,4,Smartwatch,Store,Sucursal B,100,315.45,31545.43
+2023-09-01,4,Smartwatch,Store,Sucursal C,80,303.58,24286.55
+2023-10-01,1,Smartphone,Web,Web,141,760.47,107225.85
+2023-10-01,1,Smartphone,Store,Sucursal A,85,701.82,59654.54
+2023-10-01,1,Smartphone,Store,Sucursal B,111,702.75,78005.5
+2023-10-01,1,Smartphone,Store,Sucursal C,86,630.06,54185.42
+2023-10-01,2,Laptop,Web,Web,84,1319.88,110869.97
+2023-10-01,2,Laptop,Store,Sucursal A,60,1026.22,61573.48
+2023-10-01,2,Laptop,Store,Sucursal B,50,1266.49,63324.55
+2023-10-01,2,Laptop,Store,Sucursal C,52,1137.61,59155.49
+2023-10-01,3,Headphones,Web,Web,299,152.82,45693.7
+2023-10-01,3,Headphones,Store,Sucursal A,205,164.36,33692.82
+2023-10-01,3,Headphones,Store,Sucursal B,195,151.13,29469.99
+2023-10-01,3,Headphones,Store,Sucursal C,187,152.74,28561.86
+2023-10-01,4,Smartwatch,Web,Web,134,331.58,44432.11
+2023-10-01,4,Smartwatch,Store,Sucursal A,81,317.81,25742.24
+2023-10-01,4,Smartwatch,Store,Sucursal B,87,304.54,26494.94
+2023-10-01,4,Smartwatch,Store,Sucursal C,102,288.69,29445.96
+2023-11-01,1,Smartphone,Web,Web,154,726.45,111874.0
+2023-11-01,1,Smartphone,Store,Sucursal A,108,733.74,79244.25
+2023-11-01,1,Smartphone,Store,Sucursal B,124,689.59,85508.57
+2023-11-01,1,Smartphone,Store,Sucursal C,124,748.15,92770.57
+2023-11-01,2,Laptop,Web,Web,82,1194.22,97926.33
+2023-11-01,2,Laptop,Store,Sucursal A,58,1113.6,64588.62
+2023-11-01,2,Laptop,Store,Sucursal B,58,1161.66,67376.41
+2023-11-01,2,Laptop,Store,Sucursal C,54,1120.61,60513.19
+2023-11-01,3,Headphones,Web,Web,257,152.34,39151.09
+2023-11-01,3,Headphones,Store,Sucursal A,184,166.89,30708.36
+2023-11-01,3,Headphones,Store,Sucursal B,190,139.58,26519.86
+2023-11-01,3,Headphones,Store,Sucursal C,192,137.66,26430.63
+2023-11-01,4,Smartwatch,Web,Web,124,323.92,40166.24
+2023-11-01,4,Smartwatch,Store,Sucursal A,114,312.8,35659.34
+2023-11-01,4,Smartwatch,Store,Sucursal B,81,311.38,25222.1
+2023-11-01,4,Smartwatch,Store,Sucursal C,86,304.22,26162.74
+2023-12-01,1,Smartphone,Web,Web,152,700.4,106460.7
+2023-12-01,1,Smartphone,Store,Sucursal A,125,661.37,82671.8
+2023-12-01,1,Smartphone,Store,Sucursal B,108,665.36,71859.21
+2023-12-01,1,Smartphone,Store,Sucursal C,112,732.93,82087.82
+2023-12-01,2,Laptop,Web,Web,72,1266.32,91175.22
+2023-12-01,2,Laptop,Store,Sucursal A,66,1119.96,73917.26
+2023-12-01,2,Laptop,Store,Sucursal B,62,1198.82,74326.95
+2023-12-01,2,Laptop,Store,Sucursal C,69,1233.15,85087.31
+2023-12-01,3,Headphones,Web,Web,290,157.87,45781.27
+2023-12-01,3,Headphones,Store,Sucursal A,179,150.3,26904.49
+2023-12-01,3,Headphones,Store,Sucursal B,195,140.67,27430.85
+2023-12-01,3,Headphones,Store,Sucursal C,203,144.8,29395.05
+2023-12-01,4,Smartwatch,Web,Web,134,304.9,40856.28
+2023-12-01,4,Smartwatch,Store,Sucursal A,95,304.18,28897.57
+2023-12-01,4,Smartwatch,Store,Sucursal B,94,309.51,29093.63
+2023-12-01,4,Smartwatch,Store,Sucursal C,83,306.21,25415.18
+2024-01-01,1,Smartphone,Web,Web,157,715.49,112331.58
+2024-01-01,1,Smartphone,Store,Sucursal A,118,652.06,76942.71
+2024-01-01,1,Smartphone,Store,Sucursal B,121,758.72,91805.06
+2024-01-01,1,Smartphone,Store,Sucursal C,101,680.62,68743.07
+2024-01-01,2,Laptop,Web,Web,88,1237.25,108878.21
+2024-01-01,2,Laptop,Store,Sucursal A,54,1187.79,64140.4
+2024-01-01,2,Laptop,Store,Sucursal B,55,1202.05,66112.48
+2024-01-01,2,Laptop,Store,Sucursal C,47,1153.8,54228.68
+2024-01-01,3,Headphones,Web,Web,243,159.98,38875.53
+2024-01-01,3,Headphones,Store,Sucursal A,193,156.25,30156.53
+2024-01-01,3,Headphones,Store,Sucursal B,185,162.54,30070.69
+2024-01-01,3,Headphones,Store,Sucursal C,191,153.14,29250.24
+2024-01-01,4,Smartwatch,Web,Web,125,323.08,40385.17
+2024-01-01,4,Smartwatch,Store,Sucursal A,83,286.19,23753.76
+2024-01-01,4,Smartwatch,Store,Sucursal B,77,288.97,22250.46
+2024-01-01,4,Smartwatch,Store,Sucursal C,97,318.54,30898.52
+2024-02-01,1,Smartphone,Web,Web,177,696.77,123328.12
+2024-02-01,1,Smartphone,Store,Sucursal A,117,688.93,80604.31
+2024-02-01,1,Smartphone,Store,Sucursal B,117,706.72,82686.44
+2024-02-01,1,Smartphone,Store,Sucursal C,102,689.18,70296.45
+2024-02-01,2,Laptop,Web,Web,91,1212.84,110368.5
+2024-02-01,2,Laptop,Store,Sucursal A,63,1120.13,70567.94
+2024-02-01,2,Laptop,Store,Sucursal B,59,1223.31,72175.57
+2024-02-01,2,Laptop,Store,Sucursal C,75,1349.58,101218.5
+2024-02-01,3,Headphones,Web,Web,236,164.39,38796.77
+2024-02-01,3,Headphones,Store,Sucursal A,211,147.82,31190.64
+2024-02-01,3,Headphones,Store,Sucursal B,206,148.69,30629.69
+2024-02-01,3,Headphones,Store,Sucursal C,178,144.33,25691.08
+2024-02-01,4,Smartwatch,Web,Web,119,331.29,39423.32
+2024-02-01,4,Smartwatch,Store,Sucursal A,110,307.12,33783.25
+2024-02-01,4,Smartwatch,Store,Sucursal B,96,300.16,28814.91
+2024-02-01,4,Smartwatch,Store,Sucursal C,90,280.32,25229.02
+2024-03-01,1,Smartphone,Web,Web,151,736.98,111284.39
+2024-03-01,1,Smartphone,Store,Sucursal A,111,718.54,79757.86
+2024-03-01,1,Smartphone,Store,Sucursal B,115,657.66,75630.98
+2024-03-01,1,Smartphone,Store,Sucursal C,121,721.0,87240.7
+2024-03-01,2,Laptop,Web,Web,72,1247.19,89797.93
+2024-03-01,2,Laptop,Store,Sucursal A,46,1289.44,59314.4
+2024-03-01,2,Laptop,Store,Sucursal B,53,1163.2,61649.38
+2024-03-01,2,Laptop,Store,Sucursal C,67,1181.85,79184.07
+2024-03-01,3,Headphones,Web,Web,276,164.62,45435.58
+2024-03-01,3,Headphones,Store,Sucursal A,196,138.86,27217.2
+2024-03-01,3,Headphones,Store,Sucursal B,177,139.75,24735.47
+2024-03-01,3,Headphones,Store,Sucursal C,190,148.31,28179.71
+2024-03-01,4,Smartwatch,Web,Web,137,306.35,41970.27
+2024-03-01,4,Smartwatch,Store,Sucursal A,101,261.13,26374.57
+2024-03-01,4,Smartwatch,Store,Sucursal B,95,299.77,28478.18
+2024-03-01,4,Smartwatch,Store,Sucursal C,80,308.69,24695.15
+2024-04-01,1,Smartphone,Web,Web,155,734.04,113776.87
+2024-04-01,1,Smartphone,Store,Sucursal A,105,667.34,70070.24
+2024-04-01,1,Smartphone,Store,Sucursal B,126,651.98,82149.92
+2024-04-01,1,Smartphone,Store,Sucursal C,117,643.53,75292.47
+2024-04-01,2,Laptop,Web,Web,92,1223.66,112577.0
+2024-04-01,2,Laptop,Store,Sucursal A,57,1309.56,74644.95
+2024-04-01,2,Laptop,Store,Sucursal B,62,1244.53,77160.59
+2024-04-01,2,Laptop,Store,Sucursal C,66,1217.96,80385.2
+2024-04-01,3,Headphones,Web,Web,231,160.95,37179.4
+2024-04-01,3,Headphones,Store,Sucursal A,197,144.92,28548.68
+2024-04-01,3,Headphones,Store,Sucursal B,161,147.26,23708.87
+2024-04-01,3,Headphones,Store,Sucursal C,171,151.39,25886.85
+2024-04-01,4,Smartwatch,Web,Web,121,333.01,40293.75
+2024-04-01,4,Smartwatch,Store,Sucursal A,99,290.15,28724.51
+2024-04-01,4,Smartwatch,Store,Sucursal B,84,317.79,26693.99
+2024-04-01,4,Smartwatch,Store,Sucursal C,87,310.78,27038.23
+2024-05-01,1,Smartphone,Web,Web,151,685.24,103470.73
+2024-05-01,1,Smartphone,Store,Sucursal A,108,752.55,81275.04
+2024-05-01,1,Smartphone,Store,Sucursal B,122,715.96,87346.64
+2024-05-01,1,Smartphone,Store,Sucursal C,129,775.78,100074.99
+2024-05-01,2,Laptop,Web,Web,87,1292.3,112429.91
+2024-05-01,2,Laptop,Store,Sucursal A,53,1264.35,67010.57
+2024-05-01,2,Laptop,Store,Sucursal B,78,1137.31,88710.29
+2024-05-01,2,Laptop,Store,Sucursal C,62,1082.02,67085.15
+2024-05-01,3,Headphones,Web,Web,298,155.84,46440.5
+2024-05-01,3,Headphones,Store,Sucursal A,218,147.92,32247.41
+2024-05-01,3,Headphones,Store,Sucursal B,189,148.75,28113.1
+2024-05-01,3,Headphones,Store,Sucursal C,209,152.12,31792.94
+2024-05-01,4,Smartwatch,Web,Web,140,324.94,45492.05
+2024-05-01,4,Smartwatch,Store,Sucursal A,85,317.6,26996.18
+2024-05-01,4,Smartwatch,Store,Sucursal B,71,306.0,21725.67
+2024-05-01,4,Smartwatch,Store,Sucursal C,105,290.23,30474.11
+2024-06-01,1,Smartphone,Web,Web,160,745.81,119329.46
+2024-06-01,1,Smartphone,Store,Sucursal A,123,759.58,93428.04
+2024-06-01,1,Smartphone,Store,Sucursal B,113,726.37,82079.47
+2024-06-01,1,Smartphone,Store,Sucursal C,124,713.34,88454.23
+2024-06-01,2,Laptop,Web,Web,74,1247.46,92311.94
+2024-06-01,2,Laptop,Store,Sucursal A,72,1148.97,82725.75
+2024-06-01,2,Laptop,Store,Sucursal B,65,1128.25,73336.06
+2024-06-01,2,Laptop,Store,Sucursal C,60,1226.68,73600.57
+2024-06-01,3,Headphones,Web,Web,268,151.61,40632.35
+2024-06-01,3,Headphones,Store,Sucursal A,235,154.86,36392.59
+2024-06-01,3,Headphones,Store,Sucursal B,192,155.42,29840.23
+2024-06-01,3,Headphones,Store,Sucursal C,197,147.2,28999.14
+2024-06-01,4,Smartwatch,Web,Web,144,293.72,42296.33
+2024-06-01,4,Smartwatch,Store,Sucursal A,101,273.59,27632.37
+2024-06-01,4,Smartwatch,Store,Sucursal B,99,291.72,28880.49
+2024-06-01,4,Smartwatch,Store,Sucursal C,100,338.37,33837.3
+2024-07-01,1,Smartphone,Web,Web,164,807.15,132373.03
+2024-07-01,1,Smartphone,Store,Sucursal A,126,742.29,93528.9
+2024-07-01,1,Smartphone,Store,Sucursal B,113,671.36,75864.02
+2024-07-01,1,Smartphone,Store,Sucursal C,98,699.88,68588.43
+2024-07-01,2,Laptop,Web,Web,94,1265.3,118938.61
+2024-07-01,2,Laptop,Store,Sucursal A,63,1288.65,81185.06
+2024-07-01,2,Laptop,Store,Sucursal B,60,1195.04,71702.35
+2024-07-01,2,Laptop,Store,Sucursal C,67,1192.7,79910.58
+2024-07-01,3,Headphones,Web,Web,275,166.66,45830.88
+2024-07-01,3,Headphones,Store,Sucursal A,181,154.37,27940.2
+2024-07-01,3,Headphones,Store,Sucursal B,217,164.13,35617.16
+2024-07-01,3,Headphones,Store,Sucursal C,186,161.57,30052.82
+2024-07-01,4,Smartwatch,Web,Web,123,317.11,39004.94
+2024-07-01,4,Smartwatch,Store,Sucursal A,89,273.47,24339.13
+2024-07-01,4,Smartwatch,Store,Sucursal B,109,307.7,33539.74
+2024-07-01,4,Smartwatch,Store,Sucursal C,95,292.01,27740.9
+2024-08-01,1,Smartphone,Web,Web,146,734.04,107169.4
+2024-08-01,1,Smartphone,Store,Sucursal A,119,762.03,90681.43
+2024-08-01,1,Smartphone,Store,Sucursal B,131,665.06,87122.4
+2024-08-01,1,Smartphone,Store,Sucursal C,130,710.56,92373.15
+2024-08-01,2,Laptop,Web,Web,109,1253.99,136684.99
+2024-08-01,2,Laptop,Store,Sucursal A,59,1187.78,70078.99
+2024-08-01,2,Laptop,Store,Sucursal B,77,1254.82,96620.76
+2024-08-01,2,Laptop,Store,Sucursal C,64,1151.81,73715.79
+2024-08-01,3,Headphones,Web,Web,238,139.32,33157.73
+2024-08-01,3,Headphones,Store,Sucursal A,196,156.63,30699.55
+2024-08-01,3,Headphones,Store,Sucursal B,230,138.28,31804.61
+2024-08-01,3,Headphones,Store,Sucursal C,192,146.03,28038.16
+2024-08-01,4,Smartwatch,Web,Web,118,322.0,37995.58
+2024-08-01,4,Smartwatch,Store,Sucursal A,100,299.47,29946.54
+2024-08-01,4,Smartwatch,Store,Sucursal B,83,288.98,23985.43
+2024-08-01,4,Smartwatch,Store,Sucursal C,109,287.85,31375.24
+2024-09-01,1,Smartphone,Web,Web,164,750.01,123001.41
+2024-09-01,1,Smartphone,Store,Sucursal A,101,724.26,73150.13
+2024-09-01,1,Smartphone,Store,Sucursal B,124,662.48,82146.92
+2024-09-01,1,Smartphone,Store,Sucursal C,136,597.75,81294.37
+2024-09-01,2,Laptop,Web,Web,86,1297.15,111554.84
+2024-09-01,2,Laptop,Store,Sucursal A,49,1323.45,64849.04
+2024-09-01,2,Laptop,Store,Sucursal B,73,1161.24,84770.68
+2024-09-01,2,Laptop,Store,Sucursal C,56,1152.05,64514.71
+2024-09-01,3,Headphones,Web,Web,285,159.92,45578.08
+2024-09-01,3,Headphones,Store,Sucursal A,223,148.11,33027.94
+2024-09-01,3,Headphones,Store,Sucursal B,192,156.62,30071.68
+2024-09-01,3,Headphones,Store,Sucursal C,206,149.42,30779.74
+2024-09-01,4,Smartwatch,Web,Web,114,308.6,35180.93
+2024-09-01,4,Smartwatch,Store,Sucursal A,88,317.23,27915.95
+2024-09-01,4,Smartwatch,Store,Sucursal B,91,328.1,29857.05
+2024-09-01,4,Smartwatch,Store,Sucursal C,107,316.2,33833.48
+2024-10-01,1,Smartphone,Web,Web,186,751.97,139865.61
+2024-10-01,1,Smartphone,Store,Sucursal A,134,670.38,89830.59
+2024-10-01,1,Smartphone,Store,Sucursal B,109,666.57,72656.21
+2024-10-01,1,Smartphone,Store,Sucursal C,121,714.83,86493.94
+2024-10-01,2,Laptop,Web,Web,72,1261.45,90824.63
+2024-10-01,2,Laptop,Store,Sucursal A,69,1284.73,88646.59
+2024-10-01,2,Laptop,Store,Sucursal B,77,1271.24,97885.72
+2024-10-01,2,Laptop,Store,Sucursal C,71,1355.37,96231.54
+2024-10-01,3,Headphones,Web,Web,245,160.04,39209.46
+2024-10-01,3,Headphones,Store,Sucursal A,220,147.78,32512.59
+2024-10-01,3,Headphones,Store,Sucursal B,215,159.88,34373.85
+2024-10-01,3,Headphones,Store,Sucursal C,204,149.11,30419.36
+2024-10-01,4,Smartwatch,Web,Web,131,300.01,39301.37
+2024-10-01,4,Smartwatch,Store,Sucursal A,105,292.43,30704.98
+2024-10-01,4,Smartwatch,Store,Sucursal B,83,294.12,24412.26
+2024-10-01,4,Smartwatch,Store,Sucursal C,97,286.16,27757.89
+2024-11-01,1,Smartphone,Web,Web,171,769.94,131659.89
+2024-11-01,1,Smartphone,Store,Sucursal A,123,684.89,84241.87
+2024-11-01,1,Smartphone,Store,Sucursal B,129,658.73,84976.64
+2024-11-01,1,Smartphone,Store,Sucursal C,130,741.57,96403.94
+2024-11-01,2,Laptop,Web,Web,78,1295.2,101025.73
+2024-11-01,2,Laptop,Store,Sucursal A,61,1171.51,71461.85
+2024-11-01,2,Laptop,Store,Sucursal B,71,1139.98,80938.59
+2024-11-01,2,Laptop,Store,Sucursal C,77,1159.34,89268.82
+2024-11-01,3,Headphones,Web,Web,291,160.57,46726.93
+2024-11-01,3,Headphones,Store,Sucursal A,214,148.19,31712.78
+2024-11-01,3,Headphones,Store,Sucursal B,186,158.3,29444.38
+2024-11-01,3,Headphones,Store,Sucursal C,209,149.1,31161.3
+2024-11-01,4,Smartwatch,Web,Web,130,319.98,41597.36
+2024-11-01,4,Smartwatch,Store,Sucursal A,93,302.86,28165.75
+2024-11-01,4,Smartwatch,Store,Sucursal B,93,311.08,28930.64
+2024-11-01,4,Smartwatch,Store,Sucursal C,106,309.23,32778.43
+2024-12-01,1,Smartphone,Web,Web,181,747.86,135361.77
+2024-12-01,1,Smartphone,Store,Sucursal A,108,764.34,82548.33
+2024-12-01,1,Smartphone,Store,Sucursal B,118,663.12,78248.29
+2024-12-01,1,Smartphone,Store,Sucursal C,133,662.63,88129.38
+2024-12-01,2,Laptop,Web,Web,103,1317.02,135652.9
+2024-12-01,2,Laptop,Store,Sucursal A,79,1302.64,102908.31
+2024-12-01,2,Laptop,Store,Sucursal B,52,1204.2,62618.56
+2024-12-01,2,Laptop,Store,Sucursal C,51,1269.71,64755.35
+2024-12-01,3,Headphones,Web,Web,283,164.81,46642.36
+2024-12-01,3,Headphones,Store,Sucursal A,228,153.76,35056.87
+2024-12-01,3,Headphones,Store,Sucursal B,209,145.09,30324.74
+2024-12-01,3,Headphones,Store,Sucursal C,221,136.27,30115.73
+2024-12-01,4,Smartwatch,Web,Web,150,339.18,50877.63
+2024-12-01,4,Smartwatch,Store,Sucursal A,103,319.72,32931.54
+2024-12-01,4,Smartwatch,Store,Sucursal B,92,296.31,27260.43
+2024-12-01,4,Smartwatch,Store,Sucursal C,100,287.35,28735.13
+2025-01-01,1,Smartphone,Web,Web,197,736.53,145095.64
+2025-01-01,1,Smartphone,Store,Sucursal A,130,759.33,98712.48
+2025-01-01,1,Smartphone,Store,Sucursal B,117,678.59,79394.81
+2025-01-01,1,Smartphone,Store,Sucursal C,112,698.7,78254.82
+2025-01-01,2,Laptop,Web,Web,89,1169.72,104104.79
+2025-01-01,2,Laptop,Store,Sucursal A,59,1245.6,73490.6
+2025-01-01,2,Laptop,Store,Sucursal B,60,1181.45,70886.85
+2025-01-01,2,Laptop,Store,Sucursal C,75,1154.87,86615.3
+2025-01-01,3,Headphones,Web,Web,281,156.3,43920.02
+2025-01-01,3,Headphones,Store,Sucursal A,186,155.04,28836.52
+2025-01-01,3,Headphones,Store,Sucursal B,189,158.07,29875.24
+2025-01-01,3,Headphones,Store,Sucursal C,210,150.16,31533.57
+2025-01-01,4,Smartwatch,Web,Web,126,287.95,36282.07
+2025-01-01,4,Smartwatch,Store,Sucursal A,117,276.24,32319.84
+2025-01-01,4,Smartwatch,Store,Sucursal B,104,292.75,30446.42
+2025-01-01,4,Smartwatch,Store,Sucursal C,93,302.2,28104.78
+2025-02-01,1,Smartphone,Web,Web,173,725.6,125529.05
+2025-02-01,1,Smartphone,Store,Sucursal A,125,668.81,83601.03
+2025-02-01,1,Smartphone,Store,Sucursal B,111,695.41,77190.07
+2025-02-01,1,Smartphone,Store,Sucursal C,107,702.69,75187.81
+2025-02-01,2,Laptop,Web,Web,110,1194.58,131403.37
+2025-02-01,2,Laptop,Store,Sucursal A,70,1284.66,89925.92
+2025-02-01,2,Laptop,Store,Sucursal B,71,1257.19,89260.36
+2025-02-01,2,Laptop,Store,Sucursal C,73,1217.23,88857.6
+2025-02-01,3,Headphones,Web,Web,308,148.92,45867.99
+2025-02-01,3,Headphones,Store,Sucursal A,202,150.81,30464.47
+2025-02-01,3,Headphones,Store,Sucursal B,215,151.2,32507.77
+2025-02-01,3,Headphones,Store,Sucursal C,205,142.29,29169.95
+2025-02-01,4,Smartwatch,Web,Web,141,305.31,43048.23
+2025-02-01,4,Smartwatch,Store,Sucursal A,107,326.63,34949.37
+2025-02-01,4,Smartwatch,Store,Sucursal B,96,320.89,30805.15
+2025-02-01,4,Smartwatch,Store,Sucursal C,112,296.25,33179.92
+2025-03-01,1,Smartphone,Web,Web,192,762.77,146452.24
+2025-03-01,1,Smartphone,Store,Sucursal A,123,638.8,78572.57
+2025-03-01,1,Smartphone,Store,Sucursal B,135,661.82,89345.18
+2025-03-01,1,Smartphone,Store,Sucursal C,125,685.62,85702.69
+2025-03-01,2,Laptop,Web,Web,105,1338.62,140554.95
+2025-03-01,2,Laptop,Store,Sucursal A,64,1283.74,82159.43
+2025-03-01,2,Laptop,Store,Sucursal B,66,1257.89,83020.81
+2025-03-01,2,Laptop,Store,Sucursal C,65,1296.93,84300.77
+2025-03-01,3,Headphones,Web,Web,293,153.95,45106.24
+2025-03-01,3,Headphones,Store,Sucursal A,213,149.89,31926.91
+2025-03-01,3,Headphones,Store,Sucursal B,208,149.34,31062.15
+2025-03-01,3,Headphones,Store,Sucursal C,196,147.22,28856.08
+2025-03-01,4,Smartwatch,Web,Web,146,323.41,47218.41
+2025-03-01,4,Smartwatch,Store,Sucursal A,97,295.57,28670.08
+2025-03-01,4,Smartwatch,Store,Sucursal B,105,298.39,31331.0
+2025-03-01,4,Smartwatch,Store,Sucursal C,99,306.72,30364.86
+2025-04-01,1,Smartphone,Web,Web,173,795.64,137645.38
+2025-04-01,1,Smartphone,Store,Sucursal A,138,778.1,107377.18
+2025-04-01,1,Smartphone,Store,Sucursal B,127,672.43,85398.3
+2025-04-01,1,Smartphone,Store,Sucursal C,105,678.27,71218.39
+2025-04-01,2,Laptop,Web,Web,93,1195.64,111194.09
+2025-04-01,2,Laptop,Store,Sucursal A,67,1214.35,81361.77
+2025-04-01,2,Laptop,Store,Sucursal B,68,1266.06,86091.92
+2025-04-01,2,Laptop,Store,Sucursal C,72,1317.5,94860.06
+2025-04-01,3,Headphones,Web,Web,281,177.33,49830.45
+2025-04-01,3,Headphones,Store,Sucursal A,238,138.73,33017.2
+2025-04-01,3,Headphones,Store,Sucursal B,216,152.31,32899.04
+2025-04-01,3,Headphones,Store,Sucursal C,195,147.06,28677.21
+2025-04-01,4,Smartwatch,Web,Web,129,320.66,41364.69
+2025-04-01,4,Smartwatch,Store,Sucursal A,102,299.56,30555.23
+2025-04-01,4,Smartwatch,Store,Sucursal B,106,286.41,30359.89
+2025-04-01,4,Smartwatch,Store,Sucursal C,111,290.19,32211.48
+2025-05-01,1,Smartphone,Web,Web,173,771.96,133549.42
+2025-05-01,1,Smartphone,Store,Sucursal A,142,707.81,100509.5
+2025-05-01,1,Smartphone,Store,Sucursal B,132,693.09,91488.3
+2025-05-01,1,Smartphone,Store,Sucursal C,143,694.71,99342.88
+2025-05-01,2,Laptop,Web,Web,103,1295.61,133448.18
+2025-05-01,2,Laptop,Store,Sucursal A,72,1023.58,73697.52
+2025-05-01,2,Laptop,Store,Sucursal B,74,1153.63,85368.42
+2025-05-01,2,Laptop,Store,Sucursal C,64,1224.42,78363.08
+2025-05-01,3,Headphones,Web,Web,304,164.65,50053.13
+2025-05-01,3,Headphones,Store,Sucursal A,207,153.85,31846.57
+2025-05-01,3,Headphones,Store,Sucursal B,227,145.19,32957.88
+2025-05-01,3,Headphones,Store,Sucursal C,227,153.24,34785.35
+2025-05-01,4,Smartwatch,Web,Web,144,320.27,46119.13
+2025-05-01,4,Smartwatch,Store,Sucursal A,87,316.05,27496.55
+2025-05-01,4,Smartwatch,Store,Sucursal B,86,289.87,24929.02
+2025-05-01,4,Smartwatch,Store,Sucursal C,99,297.83,29485.39
+2025-06-01,1,Smartphone,Web,Web,175,735.04,128632.38
+2025-06-01,1,Smartphone,Store,Sucursal A,141,671.4,94667.67
+2025-06-01,1,Smartphone,Store,Sucursal B,105,643.74,67592.22
+2025-06-01,1,Smartphone,Store,Sucursal C,121,673.3,81469.86
+2025-06-01,2,Laptop,Web,Web,90,1244.13,111971.62
+2025-06-01,2,Laptop,Store,Sucursal A,62,1079.77,66945.63
+2025-06-01,2,Laptop,Store,Sucursal B,66,1018.83,67242.73
+2025-06-01,2,Laptop,Store,Sucursal C,72,1211.03,87194.23
+2025-06-01,3,Headphones,Web,Web,259,163.55,42360.34
+2025-06-01,3,Headphones,Store,Sucursal A,233,142.7,33248.73
+2025-06-01,3,Headphones,Store,Sucursal B,220,152.94,33647.49
+2025-06-01,3,Headphones,Store,Sucursal C,207,146.18,30259.83
+2025-06-01,4,Smartwatch,Web,Web,131,307.14,40235.17
+2025-06-01,4,Smartwatch,Store,Sucursal A,112,302.29,33855.96
+2025-06-01,4,Smartwatch,Store,Sucursal B,80,295.08,23606.53
+2025-06-01,4,Smartwatch,Store,Sucursal C,116,302.33,35070.03
+2025-07-01,1,Smartphone,Web,Web,165,711.97,117474.38
+2025-07-01,1,Smartphone,Store,Sucursal A,127,689.37,87549.94
+2025-07-01,1,Smartphone,Store,Sucursal B,145,709.19,102832.5
+2025-07-01,1,Smartphone,Store,Sucursal C,129,706.78,91174.06
+2025-07-01,2,Laptop,Web,Web,90,1275.92,114832.96
+2025-07-01,2,Laptop,Store,Sucursal A,70,1165.03,81552.41
+2025-07-01,2,Laptop,Store,Sucursal B,73,1257.92,91828.44
+2025-07-01,2,Laptop,Store,Sucursal C,89,1274.17,113400.94
+2025-07-01,3,Headphones,Web,Web,282,162.12,45717.36
+2025-07-01,3,Headphones,Store,Sucursal A,185,159.03,29420.39
+2025-07-01,3,Headphones,Store,Sucursal B,255,139.17,35488.63
+2025-07-01,3,Headphones,Store,Sucursal C,205,132.78,27219.62
+2025-07-01,4,Smartwatch,Web,Web,136,308.2,41915.37
+2025-07-01,4,Smartwatch,Store,Sucursal A,96,321.79,30891.55
+2025-07-01,4,Smartwatch,Store,Sucursal B,104,310.06,32245.95
+2025-07-01,4,Smartwatch,Store,Sucursal C,108,283.92,30663.59
+2025-08-01,1,Smartphone,Web,Web,160,704.56,112729.89
+2025-08-01,1,Smartphone,Store,Sucursal A,137,739.39,101296.46
+2025-08-01,1,Smartphone,Store,Sucursal B,140,688.5,96389.77
+2025-08-01,1,Smartphone,Store,Sucursal C,128,721.11,92302.28
+2025-08-01,2,Laptop,Web,Web,80,1304.45,104355.96
+2025-08-01,2,Laptop,Store,Sucursal A,66,1169.21,77167.67
+2025-08-01,2,Laptop,Store,Sucursal B,59,1046.26,61729.34
+2025-08-01,2,Laptop,Store,Sucursal C,71,1188.54,84386.22
+2025-08-01,3,Headphones,Web,Web,303,162.87,49348.2
+2025-08-01,3,Headphones,Store,Sucursal A,221,155.39,34340.39
+2025-08-01,3,Headphones,Store,Sucursal B,201,155.05,31164.34
+2025-08-01,3,Headphones,Store,Sucursal C,200,154.44,30887.72
+2025-08-01,4,Smartwatch,Web,Web,151,296.41,44758.42
+2025-08-01,4,Smartwatch,Store,Sucursal A,118,277.99,32802.48
+2025-08-01,4,Smartwatch,Store,Sucursal B,121,296.65,35894.89
+2025-08-01,4,Smartwatch,Store,Sucursal C,103,322.35,33201.84
+2025-09-01,1,Smartphone,Web,Web,152,731.39,111170.68
+2025-09-01,1,Smartphone,Store,Sucursal A,142,642.49,91233.35
+2025-09-01,1,Smartphone,Store,Sucursal B,157,700.73,110014.77
+2025-09-01,1,Smartphone,Store,Sucursal C,164,708.07,116124.22
+2025-09-01,2,Laptop,Web,Web,91,1237.49,112611.43
+2025-09-01,2,Laptop,Store,Sucursal A,74,1180.94,87389.34
+2025-09-01,2,Laptop,Store,Sucursal B,73,1229.89,89782.21
+2025-09-01,2,Laptop,Store,Sucursal C,68,1268.41,86251.81
+2025-09-01,3,Headphones,Web,Web,283,155.74,44075.79
+2025-09-01,3,Headphones,Store,Sucursal A,221,153.5,33922.99
+2025-09-01,3,Headphones,Store,Sucursal B,231,143.74,33203.11
+2025-09-01,3,Headphones,Store,Sucursal C,223,165.67,36944.75
+2025-09-01,4,Smartwatch,Web,Web,142,312.15,44325.22
+2025-09-01,4,Smartwatch,Store,Sucursal A,117,294.64,34472.68
+2025-09-01,4,Smartwatch,Store,Sucursal B,108,278.64,30093.19
+2025-09-01,4,Smartwatch,Store,Sucursal C,119,296.0,35224.03
