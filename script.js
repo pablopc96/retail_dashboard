@@ -1,5 +1,6 @@
 let salesData = [];
 let chart;
+let compactView = true; // por defecto compacta
 
 async function loadCSV() {
   const response = await fetch('data/ventas.csv');
@@ -16,10 +17,8 @@ function parseCSV(csvText) {
     const cols = line.split(',');
     let obj = {};
     headers.forEach((h, i) => {
-      if (["units","price","revenue","product_id"].includes(h)) {
+      if (['units','price','revenue','product_id'].includes(h)) {
         obj[h] = parseFloat(cols[i]);
-      } else if (h === "date") {
-        obj[h] = new Date(cols[i]);
       } else {
         obj[h] = cols[i];
       }
@@ -40,82 +39,85 @@ function populateFilters() {
 
   document.getElementById('filterProduct').addEventListener('change', updateDashboard);
   document.getElementById('filterChannel').addEventListener('change', updateDashboard);
+
+  // Control de meses
+  document.getElementById('monthsIncr').addEventListener('click', () => {
+    monthsInput.value = Math.max(1, parseInt(monthsInput.value) + 1);
+    updateDashboard();
+  });
+  document.getElementById('monthsDecr').addEventListener('click', () => {
+    monthsInput.value = Math.max(1, parseInt(monthsInput.value) - 1);
+    updateDashboard();
+  });
+  document.getElementById('monthsInput').addEventListener('change', updateDashboard);
+
+  // Botón toggle
+  document.getElementById('toggleFormat').addEventListener('click', () => {
+    compactView = !compactView;
+    document.getElementById('toggleFormat').textContent =
+      compactView ? 'Vista: Compacta' : 'Vista: Exacta';
+    updateDashboard();
+  });
 }
 
 function updateDashboard() {
   const productFilter = document.getElementById('filterProduct').value;
   const channelFilter = document.getElementById('filterChannel').value;
+  const months = parseInt(document.getElementById('monthsInput').value) || 12;
 
   let filtered = salesData;
   if (productFilter !== 'All') filtered = filtered.filter(d => d.product_name === productFilter);
   if (channelFilter !== 'All') filtered = filtered.filter(d => d.channel === channelFilter);
 
-  // Totales históricos
+  // Filtrar últimos N meses (suponiendo fecha en formato YYYY-MM-DD)
+  const dates = [...new Set(filtered.map(d => d.date))].sort();
+  const lastDates = dates.slice(-months);
+  filtered = filtered.filter(d => lastDates.includes(d.date));
+
   const totalRevenue = filtered.reduce((sum,d) => sum + d.revenue, 0);
   const totalUnits = filtered.reduce((sum,d) => sum + d.units, 0);
-  const avgPrice = totalUnits ? (totalRevenue / totalUnits).toFixed(2) : 0;
+  const avgPrice = totalUnits ? (totalRevenue / totalUnits) : 0;
 
-  document.getElementById('totalRevenue').innerText = `$${totalRevenue.toFixed(2)}`;
-  document.getElementById('totalUnits').innerText = `${totalUnits}`;
-  document.getElementById('avgPrice').innerText = `$${avgPrice}`;
-
-  // Último mes cerrado
-  if(filtered.length > 0){
-    const groupedByMonth = {};
-    filtered.forEach(d => {
-      const key = `${d.date.getFullYear()}-${(d.date.getMonth()+1).toString().padStart(2,'0')}`;
-      if(!groupedByMonth[key]) groupedByMonth[key] = [];
-      groupedByMonth[key].push(d);
-    });
-
-    const months = Object.keys(groupedByMonth).sort();
-    if(months.length > 0){
-      const lastMonthKey = months[months.length-1];
-      const prevMonthKey = months.length >= 2 ? months[months.length-2] : null;
-
-      const lastData = groupedByMonth[lastMonthKey];
-      const prevData = prevMonthKey ? groupedByMonth[prevMonthKey] : [];
-
-      const lastRevenue = lastData.reduce((sum,d) => sum + d.revenue, 0);
-      const lastUnits = lastData.reduce((sum,d) => sum + d.units, 0);
-      const lastAvgPrice = lastUnits ? lastRevenue / lastUnits : 0;
-
-      const prevRevenue = prevData.reduce((sum,d) => sum + d.revenue, 0);
-      const prevUnits = prevData.reduce((sum,d) => sum + d.units, 0);
-      const prevAvgPrice = prevUnits ? prevRevenue / prevUnits : 0;
-
-      document.getElementById('lastMonthRevenue').innerText = `$${lastRevenue.toFixed(2)}`;
-      document.getElementById('lastMonthUnits').innerText = `${lastUnits}`;
-      document.getElementById('lastMonthAvgPrice').innerText = `$${lastAvgPrice.toFixed(2)}`;
-
-      document.getElementById('lastMonthRevenueDelta').innerHTML = deltaHTML(lastRevenue, prevRevenue);
-      document.getElementById('lastMonthUnitsDelta').innerHTML = deltaHTML(lastUnits, prevUnits);
-      document.getElementById('lastMonthAvgPriceDelta').innerHTML = deltaHTML(lastAvgPrice, prevAvgPrice);
-    }
-  }
+  setValue('totalRevenue', totalRevenue, true);
+  setValue('totalUnits', totalUnits, false);
+  setValue('avgPrice', avgPrice, true);
 
   drawChart(filtered);
 }
 
-function deltaHTML(current, previous) {
-  if(previous === 0) return '';
-  const pct = ((current - previous) / previous * 100).toFixed(1);
-  if(pct >= 0) return `<span class="text-green-600 font-bold text-xl">▲ ${pct}%</span>`;
-  else return `<span class="text-red-600 font-bold text-xl">▼ ${Math.abs(pct)}%</span>`;
+// Helpers de formato
+function formatCompact(num) {
+  const n = Number(num);
+  const abs = Math.abs(n);
+  if (abs >= 1e9) return (n/1e9).toFixed(1).replace('.', ',') + ' B';
+  if (abs >= 1e6) return (n/1e6).toFixed(1).replace('.', ',') + ' M';
+  if (abs >= 1e3) return (n/1e3).toFixed(1).replace('.', ',') + ' K';
+  return n.toLocaleString('es-AR');
+}
+
+function formatExact(num, money=false) {
+  let opts = {maximumFractionDigits: 2};
+  let formatted = Number(num).toLocaleString('es-AR', opts);
+  return money ? `$${formatted}` : formatted;
+}
+
+function setValue(id, value, money=false) {
+  const el = document.getElementById(id);
+  el.dataset.value = value;
+  el.textContent = compactView ? formatCompact(value) : formatExact(value, money);
 }
 
 function drawChart(data) {
   const grouped = {};
   data.forEach(d => {
-    const key = `${d.date.getFullYear()}-${(d.date.getMonth()+1).toString().padStart(2,'0')}`;
-    if(!grouped[key]) grouped[key] = 0;
-    grouped[key] += d.revenue;
+    if (!grouped[d.date]) grouped[d.date] = 0;
+    grouped[d.date] += d.revenue;
   });
 
   const labels = Object.keys(grouped).sort();
   const values = labels.map(l => grouped[l]);
 
-  if(chart) chart.destroy();
+  if (chart) chart.destroy();
   const ctx = document.getElementById('salesChart').getContext('2d');
   chart = new Chart(ctx, {
     type: 'line',
@@ -131,12 +133,9 @@ function drawChart(data) {
       }]
     },
     options: {
-      responsive:true,
-      plugins:{legend:{display:true}},
-      scales:{
-        x:{grid:{display:false}},
-        y:{grid:{display:false}}
-      }
+      responsive: true,
+      plugins: { legend: { display: true } },
+      scales: { x: { display: true }, y: { display: true } }
     }
   });
 }
