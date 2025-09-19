@@ -38,21 +38,42 @@
   <!-- Main Content -->
   <main class="flex-1 p-6 overflow-auto">
 
-    <!-- Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center">
+    <!-- Top Cards: Totales históricos -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
         <span class="text-gray-500">Total Revenue</span>
-        <span id="totalRevenue" class="text-2xl font-bold">$0</span>
+        <span id="totalRevenue" class="text-xl md:text-2xl font-bold">$0</span>
       </div>
 
-      <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center">
+      <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
         <span class="text-gray-500">Total Units</span>
-        <span id="totalUnits" class="text-2xl font-bold">0</span>
+        <span id="totalUnits" class="text-xl md:text-2xl font-bold">0</span>
       </div>
 
-      <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center">
+      <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
         <span class="text-gray-500">Average Price</span>
-        <span id="avgPrice" class="text-2xl font-bold">$0</span>
+        <span id="avgPrice" class="text-xl md:text-2xl font-bold">$0</span>
+      </div>
+    </div>
+
+    <!-- New Cards: Último mes cerrado -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
+        <span class="text-gray-500">Revenue Último Mes</span>
+        <span id="lastMonthRevenue" class="text-xl md:text-2xl font-bold">$0</span>
+        <span id="lastMonthRevenueDelta" class="text-sm mt-1"></span>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
+        <span class="text-gray-500">Units Último Mes</span>
+        <span id="lastMonthUnits" class="text-xl md:text-2xl font-bold">0</span>
+        <span id="lastMonthUnitsDelta" class="text-sm mt-1"></span>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
+        <span class="text-gray-500">Avg Price Último Mes</span>
+        <span id="lastMonthAvgPrice" class="text-xl md:text-2xl font-bold">$0</span>
+        <span id="lastMonthAvgPriceDelta" class="text-sm mt-1"></span>
       </div>
     </div>
 
