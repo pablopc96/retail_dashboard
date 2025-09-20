@@ -41,7 +41,7 @@
     aside.collapsed .show-icon-only { display: block; }
 
     /* months input width */
-    #monthsFilter { width: 4.5rem; }
+    #monthsFilter { width: 16rem; } /* igual ancho que dropdowns */
 
     /* custom dropdown styles */
     .dd-btn {
@@ -52,7 +52,7 @@
     }
     .dd-panel {
       position: absolute;
-      background: white;
+      background: #374151; /* grisaceo-azulado igual que botones */
       border-radius: 0.5rem;
       box-shadow: 0 6px 18px rgba(0,0,0,0.08);
       z-index: 50;
@@ -65,22 +65,28 @@
       display:flex; align-items:center; gap:0.5rem; padding:0.4rem 0.25rem; border-radius:0.25rem;
     }
     .dd-checkbox:hover { background: #f3f4f6 }
+
     /* collapse button style */
     #collapseBtn {
       background: transparent;
-      border: 1px solid rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.3); /* borde más clarito */
       color: #fff;
       padding: .25rem .5rem;
       border-radius: .375rem;
+      transition: all .2s;
     }
+    #collapseBtn:hover { background: #fff; color: #2563eb; }
+
     /* reset button */
     #resetFilters {
       background: transparent;
-      border: 1px solid rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.3); /* borde más clarito */
       color: #fff;
       padding: .25rem .5rem;
       border-radius: .375rem;
+      transition: all .2s;
     }
+    #resetFilters:hover { background: #fff; color: #2563eb; }
   </style>
 </head>
 <body class="bg-gray-100 font-sans">
@@ -92,10 +98,8 @@
     <div class="flex items-start justify-between mb-4">
       <div>
         <h2 class="text-2xl font-bold hide-when-collapsed">Filtros</h2>
-        <p class="text-sm text-gray-300 hide-when-collapsed mt-1">Ajustá la ventana temporal y segmentaciones</p>
       </div>
 
-      <!-- moved collapse to top-right, improved look -->
       <div class="flex items-center gap-2">
         <button id="resetFilters" class="text-sm hide-when-collapsed" title="Restablecer filtros">Reset</button>
         <button id="collapseBtn" aria-label="Colapsar filtros" title="Colapsar/Expandir">
@@ -107,9 +111,9 @@
       </div>
     </div>
 
-    <!-- Últimos N meses -->
+    <!-- Últimos meses -->
     <div class="mb-4 hide-when-collapsed">
-      <label class="block mb-1 text-gray-200">Últimos N meses</label>
+      <label class="block mb-1 text-gray-200">Últimos meses a visualizar</label>
       <div class="flex items-center gap-2">
         <button id="decreaseMonths" class="px-2 py-1 bg-gray-700 rounded text-white hover:bg-gray-600">−</button>
         <input id="monthsFilter" type="number" value="12" min="1"
@@ -157,10 +161,6 @@
         <div id="branchPanel" class="dd-panel hidden" role="listbox" aria-multiselectable="true"></div>
       </div>
 
-    </div>
-
-    <div class="mt-auto text-xs text-gray-400 hide-when-collapsed">
-      <div>Filtrado persistente</div>
     </div>
 
     <div class="show-icon-only text-center text-gray-300">⚙</div>
@@ -225,18 +225,16 @@
     <div class="bg-white rounded-lg shadow-lg p-6">
       <div class="flex justify-between items-center mb-4">
         <h3 id="chartTitle" class="text-xl font-semibold">Evolución temporal</h3>
-        <label class="flex items-center gap-2">
-          <span class="text-gray-600 text-sm hide-when-collapsed">Métrica:</span>
-          <select id="metricSelector" class="p-2 rounded bg-gray-100 border focus:outline-none">
-            <option value="revenue">Revenue</option>
-            <option value="units">Units</option>
-          </select>
-        </label>
+        <select id="metricSelector" class="p-2 rounded bg-gray-100 text-gray-700">
+          <option value="revenue">Revenue</option>
+          <option value="units">Units</option>
+        </select>
       </div>
-      <canvas id="salesChart" class="w-full h-96"></canvas>
+      <canvas id="salesChart" height="120"></canvas>
     </div>
 
   </main>
+
 </div>
 
 <script src="script.js"></script>
