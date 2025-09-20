@@ -3,103 +3,236 @@
 <head>
   <meta charset="UTF-8">
   <title>Retail Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="stylesheet" href="styles.css">
+
+  <style>
+    /* Toggle switch */
+    .toggle {
+      width: 48px;
+      height: 26px;
+      border-radius: 9999px;
+      padding: 3px;
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+      transition: background-color .18s;
+    }
+    .toggle .knob {
+      width: 20px;
+      height: 20px;
+      border-radius: 9999px;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,.2);
+      transform: translateX(0);
+      transition: transform .18s;
+    }
+    .toggle.on { background-color: #2563eb; } /* azul */
+    .toggle.off { background-color: #9ca3af; } /* gris */
+    .toggle.on .knob { transform: translateX(22px); }
+    .toggle.off .knob { transform: translateX(0); }
+
+    /* collapsed sidebar behavior */
+    aside.collapsed { width: 64px !important; }
+    .hide-when-collapsed { display: block; }
+    aside.collapsed .hide-when-collapsed { display: none; }
+    .show-icon-only { display: none; }
+    aside.collapsed .show-icon-only { display: block; }
+
+    /* months input width */
+    #monthsFilter { width: 4.5rem; }
+
+    /* custom dropdown styles */
+    .dd-btn {
+      background: #374151; color: #fff;
+      padding: 0.5rem 0.75rem; border-radius: 0.375rem;
+      width: 100%; text-align: left;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .dd-panel {
+      position: absolute;
+      background: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      z-index: 50;
+      width: 16rem;
+      max-height: 240px;
+      overflow: auto;
+      padding: 0.5rem;
+    }
+    .dd-checkbox {
+      display:flex; align-items:center; gap:0.5rem; padding:0.4rem 0.25rem; border-radius:0.25rem;
+    }
+    .dd-checkbox:hover { background: #f3f4f6 }
+    /* collapse button style */
+    #collapseBtn {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.06);
+      color: #fff;
+      padding: .25rem .5rem;
+      border-radius: .375rem;
+    }
+    /* reset button */
+    #resetFilters {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.06);
+      color: #fff;
+      padding: .25rem .5rem;
+      border-radius: .375rem;
+    }
+  </style>
 </head>
 <body class="bg-gray-100 font-sans">
 
 <div class="flex h-screen">
 
-  <!-- Sidebar -->
-  <aside class="w-64 bg-gray-800 text-gray-100 p-6 flex flex-col">
-    <div class="flex justify-between items-center mb-6">
-      <h2 class="text-2xl font-bold">Filtros</h2>
+  <!-- Sidebar / Filters -->
+  <aside id="sidebar" class="w-64 bg-gray-800 text-gray-100 p-4 flex flex-col transition-all duration-200">
+    <div class="flex items-start justify-between mb-4">
+      <div>
+        <h2 class="text-2xl font-bold hide-when-collapsed">Filtros</h2>
+        <p class="text-sm text-gray-300 hide-when-collapsed mt-1">Ajustá la ventana temporal y segmentaciones</p>
+      </div>
+
+      <!-- moved collapse to top-right, improved look -->
+      <div class="flex items-center gap-2">
+        <button id="resetFilters" class="text-sm hide-when-collapsed" title="Restablecer filtros">Reset</button>
+        <button id="collapseBtn" aria-label="Colapsar filtros" title="Colapsar/Expandir">
+          <svg id="collapseIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+               viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+      </div>
     </div>
 
-    <label class="mb-4 block">
-      <span class="block mb-1">Últimos N meses</span>
-      <div class="flex items-center gap-2 w-full">
+    <!-- Últimos N meses -->
+    <div class="mb-4 hide-when-collapsed">
+      <label class="block mb-1 text-gray-200">Últimos N meses</label>
+      <div class="flex items-center gap-2">
         <button id="decreaseMonths" class="px-2 py-1 bg-gray-700 rounded text-white hover:bg-gray-600">−</button>
         <input id="monthsFilter" type="number" value="12" min="1"
-               class="w-full p-2 rounded bg-gray-700 text-white text-center focus:outline-none appearance-none">
+               class="p-2 rounded bg-gray-700 text-white text-center focus:outline-none">
         <button id="increaseMonths" class="px-2 py-1 bg-gray-700 rounded text-white hover:bg-gray-600">+</button>
       </div>
-    </label>
+    </div>
 
-    <label class="mb-4 block">
-      <span class="block mb-1">Producto</span>
-      <select id="productFilter" class="w-full p-2 rounded bg-gray-700 text-white focus:outline-none">
-        <option value="all">Todos</option>
-      </select>
-    </label>
+    <!-- Dropdowns container -->
+    <div class="space-y-3">
 
-    <label class="mb-4 block">
-      <span class="block mb-1">Canal</span>
-      <select id="channelFilter" class="w-full p-2 rounded bg-gray-700 text-white focus:outline-none">
-        <option value="all">Todos</option>
-        <option value="Web">Web</option>
-        <option value="Store">Store</option>
-      </select>
-    </label>
+      <!-- Product dropdown -->
+      <div class="relative">
+        <label class="block mb-1 hide-when-collapsed text-gray-200">Producto</label>
+        <button id="productBtn" class="dd-btn" aria-haspopup="listbox" aria-expanded="false">
+          <span id="productBtnLabel" class="text-sm text-gray-200">Todos</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-300" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.293l3.71-4.06a.75.75 0 111.08 1.04l-4.25 4.66a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+          </svg>
+        </button>
+        <div id="productPanel" class="dd-panel hidden" role="listbox" aria-multiselectable="true"></div>
+      </div>
+
+      <!-- Channel dropdown -->
+      <div class="relative">
+        <label class="block mb-1 hide-when-collapsed text-gray-200">Canal</label>
+        <button id="channelBtn" class="dd-btn" aria-haspopup="listbox" aria-expanded="false">
+          <span id="channelBtnLabel" class="text-sm text-gray-200">Todos</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-300" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.293l3.71-4.06a.75.75 0 111.08 1.04l-4.25 4.66a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+          </svg>
+        </button>
+        <div id="channelPanel" class="dd-panel hidden" role="listbox" aria-multiselectable="true"></div>
+      </div>
+
+      <!-- Branch dropdown -->
+      <div class="relative">
+        <label class="block mb-1 hide-when-collapsed text-gray-200">Sucursal</label>
+        <button id="branchBtn" class="dd-btn" aria-haspopup="listbox" aria-expanded="false">
+          <span id="branchBtnLabel" class="text-sm text-gray-200">Todos</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-300" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.293l3.71-4.06a.75.75 0 111.08 1.04l-4.25 4.66a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+          </svg>
+        </button>
+        <div id="branchPanel" class="dd-panel hidden" role="listbox" aria-multiselectable="true"></div>
+      </div>
+
+    </div>
+
+    <div class="mt-auto text-xs text-gray-400 hide-when-collapsed">
+      <div>Filtrado persistente</div>
+    </div>
+
+    <div class="show-icon-only text-center text-gray-300">⚙</div>
   </aside>
 
   <!-- Main Content -->
   <main class="flex-1 p-6 overflow-auto">
 
-    <!-- Header con toggle -->
+    <!-- Header -->
     <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold">Retail Dashboard</h1>
-      <div class="flex items-center">
-        <span class="mr-2 text-gray-600">Vista compacta</span>
-        <label class="relative inline-flex items-center cursor-pointer">
-          <input type="checkbox" id="toggleNumbers" class="sr-only peer" checked>
-          <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer
-                      peer-checked:bg-blue-500 transition-colors"></div>
-          <div class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-all
-                      peer-checked:translate-x-full"></div>
-        </label>
+      <h1 class="text-3xl font-bold">Retail Dashboard</h1>
+
+      <!-- Switch compact/exact -->
+      <div class="flex items-center gap-3">
+        <span class="text-sm text-gray-600 hide-when-collapsed">Vista compacta</span>
+        <button id="toggleSwitch" class="toggle on" aria-pressed="true" title="Alternar vista compacta/exacta">
+          <span class="knob"></span>
+        </button>
       </div>
     </div>
 
-    <!-- Top Cards: totales históricos -->
+    <!-- Top Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
         <span class="text-gray-500">Total Revenue</span>
         <span id="salesCard" class="text-xl md:text-2xl font-bold">$0</span>
       </div>
+
       <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
         <span class="text-gray-500">Total Units</span>
         <span id="customersCard" class="text-xl md:text-2xl font-bold">0</span>
       </div>
+
       <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
         <span class="text-gray-500">Average Price</span>
-        <span id="ordersCard" class="text-xl md:text-2xl font-bold">$0</span>
+        <span id="ordersCard" class="text-xl md:text-2xl font-bold">$0.0</span>
       </div>
     </div>
 
-    <!-- Tarjetas último mes -->
+    <!-- Último mes cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
         <span class="text-gray-500">Revenue Último Mes</span>
         <span id="lastMonthRevenue" class="text-xl md:text-2xl font-bold">$0</span>
         <span id="lastMonthRevenueDelta" class="text-lg mt-1 text-green-500"></span>
       </div>
+
       <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
         <span class="text-gray-500">Units Último Mes</span>
         <span id="lastMonthUnits" class="text-xl md:text-2xl font-bold">0</span>
         <span id="lastMonthUnitsDelta" class="text-lg mt-1 text-green-500"></span>
       </div>
+
       <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
         <span class="text-gray-500">Avg Price Último Mes</span>
-        <span id="lastMonthAvgPrice" class="text-xl md:text-2xl font-bold">$0</span>
+        <span id="lastMonthAvgPrice" class="text-xl md:text-2xl font-bold">$0.0</span>
         <span id="lastMonthAvgPriceDelta" class="text-lg mt-1 text-green-500"></span>
       </div>
     </div>
 
     <!-- Chart -->
     <div class="bg-white rounded-lg shadow-lg p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h3 id="chartTitle" class="text-xl font-semibold">Evolución temporal</h3>
+        <label class="flex items-center gap-2">
+          <span class="text-gray-600 text-sm hide-when-collapsed">Métrica:</span>
+          <select id="metricSelector" class="p-2 rounded bg-gray-100 border focus:outline-none">
+            <option value="revenue">Revenue</option>
+            <option value="units">Units</option>
+          </select>
+        </label>
+      </div>
       <canvas id="salesChart" class="w-full h-96"></canvas>
     </div>
 
