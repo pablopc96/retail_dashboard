@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Retail Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="stylesheet" href="styles.css">
 </head>
 <body class="bg-gray-100 font-sans">
 
@@ -16,81 +15,91 @@
   <aside class="w-64 bg-gray-800 text-gray-100 p-6 flex flex-col">
     <h2 class="text-2xl font-bold mb-6">Filtros</h2>
 
-    <!-- Producto -->
-    <label class="mb-4 block">
-      <span class="block mb-1">Producto</span>
-      <select id="productFilter" class="w-full p-2 rounded bg-gray-700 text-white focus:outline-none">
-        <option value="all">Todos</option>
-      </select>
-    </label>
-
-    <!-- Canal -->
-    <label class="mb-4 block">
-      <span class="block mb-1">Canal</span>
-      <select id="channelFilter" class="w-full p-2 rounded bg-gray-700 text-white focus:outline-none">
-        <option value="all">Todos</option>
-        <option value="Web">Web</option>
-        <option value="Store">Store</option>
-      </select>
-    </label>
-
     <!-- Últimos N meses -->
     <label class="mb-4 block">
       <span class="block mb-1">Últimos N meses</span>
-      <div class="flex w-full">
-        <button id="decreaseMonths" class="bg-gray-700 text-white px-2 rounded-l">-</button>
-        <input id="monthsFilter" type="number" value="12"
-               class="w-full p-2 text-center bg-gray-700 text-white focus:outline-none">
-        <button id="increaseMonths" class="bg-gray-700 text-white px-2 rounded-r">+</button>
+      <div class="flex">
+        <button id="decreaseMonths" class="px-2 bg-gray-700 text-white rounded-l">-</button>
+        <input 
+          type="number" 
+          id="monthsInput" 
+          value="12" 
+          min="1"
+          class="w-20 text-center bg-gray-700 text-white focus:outline-none"
+        />
+        <button id="increaseMonths" class="px-2 bg-gray-700 text-white rounded-r">+</button>
       </div>
+    </label>
+
+    <label class="mb-4 block">
+      <span class="block mb-1">Producto</span>
+      <select id="filterProduct" class="w-full p-2 rounded bg-gray-700 text-white focus:outline-none">
+        <option value="All">Todos</option>
+      </select>
+    </label>
+
+    <label class="mb-4 block">
+      <span class="block mb-1">Canal</span>
+      <select id="filterChannel" class="w-full p-2 rounded bg-gray-700 text-white focus:outline-none">
+        <option value="All">Todos</option>
+        <option value="Web">Web</option>
+        <option value="Store">Store</option>
+      </select>
     </label>
   </aside>
 
   <!-- Main Content -->
   <main class="flex-1 p-6 overflow-auto">
 
-    <!-- Tarjetas -->
+    <!-- Título -->
+    <h1 class="text-3xl font-bold mb-6">Retail Dashboard</h1>
+
+    <!-- Top Cards: Totales históricos -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-      <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center">
+      <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
         <span class="text-gray-500">Total Revenue</span>
         <span id="totalRevenue" class="text-xl md:text-2xl font-bold">$0</span>
       </div>
-      <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center">
+
+      <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
         <span class="text-gray-500">Total Units</span>
         <span id="totalUnits" class="text-xl md:text-2xl font-bold">0</span>
       </div>
-      <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center">
+
+      <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
         <span class="text-gray-500">Average Price</span>
         <span id="avgPrice" class="text-xl md:text-2xl font-bold">$0</span>
       </div>
     </div>
 
-    <!-- Tarjetas Último Mes -->
+    <!-- Nuevas tarjetas: Último mes cerrado -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-      <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center">
+      <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
         <span class="text-gray-500">Revenue Último Mes</span>
         <span id="lastMonthRevenue" class="text-xl md:text-2xl font-bold">$0</span>
         <span id="lastMonthRevenueDelta" class="text-lg mt-1"></span>
       </div>
-      <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center">
+
+      <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
         <span class="text-gray-500">Units Último Mes</span>
         <span id="lastMonthUnits" class="text-xl md:text-2xl font-bold">0</span>
         <span id="lastMonthUnitsDelta" class="text-lg mt-1"></span>
       </div>
-      <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center">
+
+      <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
         <span class="text-gray-500">Avg Price Último Mes</span>
         <span id="lastMonthAvgPrice" class="text-xl md:text-2xl font-bold">$0</span>
         <span id="lastMonthAvgPriceDelta" class="text-lg mt-1"></span>
       </div>
     </div>
 
-    <!-- Sección Linechart -->
+    <!-- Chart -->
     <div class="bg-white rounded-lg shadow-lg p-6">
-      <div class="flex justify-between items-center mb-4">
-        <h3 id="chartTitle" class="text-xl font-semibold">Evolución temporal</h3>
+      <div class="flex items-center justify-between mb-4">
+        <h2 id="chartTitle" class="text-lg font-bold">Evolución temporal</h2>
         <label class="flex items-center space-x-2">
-          <span class="text-gray-600 font-medium">Métrica:</span>
-          <select id="metricSelector" class="p-2 rounded bg-gray-200 focus:outline-none">
+          <span class="text-gray-600">Métrica:</span>
+          <select id="metricSelect" class="p-1 border rounded focus:outline-none pr-6">
             <option value="revenue">Revenue</option>
             <option value="units">Units</option>
           </select>
