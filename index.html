@@ -1,179 +1,105 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Retail Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <style>
-    /* Toggle switch minimal */
-    .toggle {
-      width: 48px;
-      height: 26px;
-      border-radius: 9999px;
-      padding: 3px;
-      display: inline-flex;
-      align-items: center;
-      cursor: pointer;
-      transition: background-color .18s;
-    }
-    .toggle .knob {
-      width: 20px;
-      height: 20px;
-      border-radius: 9999px;
-      background: white;
-      box-shadow: 0 1px 3px rgba(0,0,0,.2);
-      transform: translateX(0);
-      transition: transform .18s;
-    }
-    .toggle.on { background-color: #2563eb; } /* azul */
-    .toggle.off { background-color: #9ca3af; } /* gris */
-    .toggle.on .knob { transform: translateX(22px); }
-    .toggle.off .knob { transform: translateX(0); }
-
-    /* collapsed sidebar */
-    aside.collapsed { width: 64px !important; }
-    .hide-when-collapsed { display: block; }
-    aside.collapsed .hide-when-collapsed { display: none; }
-    .show-icon-only { display: none; }
-    aside.collapsed .show-icon-only { display: block; }
-
-    /* months input width fixed */
-    #monthsFilter { width: 4.5rem; }
-
-    /* tiny aesthetics for selects multi */
-    select[multiple] { min-height: 6rem; }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body class="bg-gray-100 font-sans">
 
 <div class="flex h-screen">
 
   <!-- Sidebar -->
-  <aside id="sidebar" class="w-64 bg-gray-800 text-gray-100 p-6 flex flex-col transition-all duration-200">
-    <div class="flex items-center justify-between mb-4">
-      <h2 class="text-2xl font-bold hide-when-collapsed">Filtros</h2>
-      <div class="flex items-center gap-2">
-        <button id="resetFilters" class="text-sm bg-gray-700 px-2 py-1 rounded hide-when-collapsed">Reset</button>
-        <button id="collapseBtn" aria-label="Collapse sidebar" class="p-1 bg-gray-700 rounded">
-          <span id="collapseIcon">◀</span>
-        </button>
-      </div>
+  <aside class="w-64 bg-gray-800 text-gray-100 p-6 flex flex-col">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold">Filtros</h2>
     </div>
 
-    <!-- Últimos N meses -->
-    <label class="mb-4 block hide-when-collapsed">
+    <label class="mb-4 block">
       <span class="block mb-1">Últimos N meses</span>
       <div class="flex items-center gap-2 w-full">
         <button id="decreaseMonths" class="px-2 py-1 bg-gray-700 rounded text-white hover:bg-gray-600">−</button>
         <input id="monthsFilter" type="number" value="12" min="1"
-               class="p-2 rounded bg-gray-700 text-white text-center focus:outline-none appearance-none" />
+               class="w-full p-2 rounded bg-gray-700 text-white text-center focus:outline-none appearance-none">
         <button id="increaseMonths" class="px-2 py-1 bg-gray-700 rounded text-white hover:bg-gray-600">+</button>
       </div>
     </label>
 
-    <!-- Producto -->
     <label class="mb-4 block">
-      <span class="block mb-1 hide-when-collapsed">Producto</span>
-      <select id="productFilter" multiple class="w-full p-2 rounded bg-gray-700 text-white focus:outline-none">
-        <option value="all" selected>Todos</option>
+      <span class="block mb-1">Producto</span>
+      <select id="productFilter" class="w-full p-2 rounded bg-gray-700 text-white focus:outline-none">
+        <option value="all">Todos</option>
       </select>
     </label>
 
-    <!-- Canal -->
     <label class="mb-4 block">
-      <span class="block mb-1 hide-when-collapsed">Canal</span>
-      <select id="channelFilter" multiple class="w-full p-2 rounded bg-gray-700 text-white focus:outline-none">
-        <option value="all" selected>Todos</option>
+      <span class="block mb-1">Canal</span>
+      <select id="channelFilter" class="w-full p-2 rounded bg-gray-700 text-white focus:outline-none">
+        <option value="all">Todos</option>
         <option value="Web">Web</option>
         <option value="Store">Store</option>
       </select>
     </label>
-
-    <!-- Sucursal -->
-    <label class="mb-4 block">
-      <span class="block mb-1 hide-when-collapsed">Sucursal</span>
-      <select id="branchFilter" multiple class="w-full p-2 rounded bg-gray-700 text-white focus:outline-none">
-        <option value="all" selected>Todos</option>
-      </select>
-    </label>
-
-    <div class="mt-auto text-xs text-gray-400 hide-when-collapsed">
-      <div>Filtrado persistente</div>
-    </div>
-
-    <div class="show-icon-only text-center text-gray-300">⚙</div>
   </aside>
 
   <!-- Main Content -->
   <main class="flex-1 p-6 overflow-auto">
 
-    <!-- Header -->
+    <!-- Header con toggle -->
     <div class="flex justify-between items-center mb-6">
-      <h1 class="text-3xl font-bold">Retail Dashboard</h1>
-
-      <!-- Switch compact/exact -->
-      <div class="flex items-center gap-3">
-        <span class="text-sm text-gray-600 hide-when-collapsed">Vista compacta</span>
-        <button id="toggleSwitch" class="toggle on" aria-pressed="true" title="Alternar vista compacta/exacta">
-          <span class="knob"></span>
-        </button>
+      <h1 class="text-2xl font-bold">Retail Dashboard</h1>
+      <div class="flex items-center">
+        <span class="mr-2 text-gray-600">Vista compacta</span>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" id="toggleNumbers" class="sr-only peer" checked>
+          <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer
+                      peer-checked:bg-blue-500 transition-colors"></div>
+          <div class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-all
+                      peer-checked:translate-x-full"></div>
+        </label>
       </div>
     </div>
 
-    <!-- Top Cards -->
+    <!-- Top Cards: totales históricos -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
         <span class="text-gray-500">Total Revenue</span>
         <span id="salesCard" class="text-xl md:text-2xl font-bold">$0</span>
       </div>
-
       <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
         <span class="text-gray-500">Total Units</span>
         <span id="customersCard" class="text-xl md:text-2xl font-bold">0</span>
       </div>
-
       <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
         <span class="text-gray-500">Average Price</span>
-        <span id="ordersCard" class="text-xl md:text-2xl font-bold">$0.0</span>
+        <span id="ordersCard" class="text-xl md:text-2xl font-bold">$0</span>
       </div>
     </div>
 
-    <!-- Último mes cards -->
+    <!-- Tarjetas último mes -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
         <span class="text-gray-500">Revenue Último Mes</span>
         <span id="lastMonthRevenue" class="text-xl md:text-2xl font-bold">$0</span>
         <span id="lastMonthRevenueDelta" class="text-lg mt-1 text-green-500"></span>
       </div>
-
       <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
         <span class="text-gray-500">Units Último Mes</span>
         <span id="lastMonthUnits" class="text-xl md:text-2xl font-bold">0</span>
         <span id="lastMonthUnitsDelta" class="text-lg mt-1 text-green-500"></span>
       </div>
-
       <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
         <span class="text-gray-500">Avg Price Último Mes</span>
-        <span id="lastMonthAvgPrice" class="text-xl md:text-2xl font-bold">$0.0</span>
+        <span id="lastMonthAvgPrice" class="text-xl md:text-2xl font-bold">$0</span>
         <span id="lastMonthAvgPriceDelta" class="text-lg mt-1 text-green-500"></span>
       </div>
     </div>
 
     <!-- Chart -->
     <div class="bg-white rounded-lg shadow-lg p-6">
-      <div class="flex justify-between items-center mb-4">
-        <h3 id="chartTitle" class="text-xl font-semibold">Evolución temporal</h3>
-        <label class="flex items-center gap-2">
-          <span class="text-gray-600 text-sm hide-when-collapsed">Métrica:</span>
-          <select id="metricSelector" class="p-2 rounded bg-gray-100 border focus:outline-none">
-            <option value="revenue">Revenue</option>
-            <option value="units">Units</option>
-          </select>
-        </label>
-      </div>
       <canvas id="salesChart" class="w-full h-96"></canvas>
     </div>
 
