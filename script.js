@@ -1,219 +1,400 @@
+/* script.js - filtros con dropdowns de checkboxes + mejoras visuales */
 let salesData = [];
-let chart;
+let chart = null;
 let showCompact = true;
+let branchFieldName = null;
+
+// selection state (arrays or 'all')
+const selection = {
+  product: 'all',
+  channel: 'all',
+  branch: 'all'
+};
 
 async function loadCSV() {
-  const res = await fetch('data/ventas.csv');
-  const text = await res.text();
-  parseCSV(text);
-  populateFilters();
-  updateDashboard();
+  try {
+    const res = await fetch('data/ventas.csv');
+    if (!res.ok) throw new Error('No se pudo cargar data/ventas.csv');
+    const text = await res.text();
+    parseCSV(text);
+    populateFilters();
+    updateDashboard();
+    attachGlobalClicks();
+  } catch (e) {
+    console.error(e);
+    alert('Error cargando el CSV. Revisa consola.');
+  }
 }
 
+/* ---------- parse CSV ---------- */
 function parseCSV(csvText) {
-  const lines = csvText.trim().split('\n');
-  const headers = lines[0].split(',');
+  const lines = csvText.trim().split('\n').filter(Boolean);
+  if (lines.length < 1) { salesData = []; return; }
+  const headers = lines[0].split(',').map(h => h.trim());
+  const possibleBranches = ['branch','sucursal','store','store_name','branch_name'];
+  branchFieldName = headers.find(h => possibleBranches.includes(h.toLowerCase())) || null;
+
   salesData = lines.slice(1).map(line => {
     const cols = line.split(',');
-    let obj = {};
+    const obj = {};
     headers.forEach((h,i)=>{
-      if(['units','price','revenue'].includes(h)){
-        obj[h] = parseFloat(cols[i]);
+      const key = h.trim();
+      const raw = cols[i] !== undefined ? cols[i].trim() : '';
+      if (['units','price','revenue'].includes(key)) {
+        obj[key] = parseFloat(raw) || 0;
       } else {
-        obj[h] = cols[i];
+        obj[key] = raw;
       }
     });
     return obj;
   });
 }
 
+/* ---------- populate dropdowns as checkbox panels ---------- */
 function populateFilters() {
-  const productSet = new Set(salesData.map(d=>d.product_name));
-  const selectP = document.getElementById('productFilter');
-  productSet.forEach(p=>{
-    const opt = document.createElement('option');
-    opt.value = p;
-    opt.text = p;
-    selectP.add(opt);
-  });
+  // build unique sorted sets
+  const productSet = Array.from(new Set(salesData.map(d => d.product_name).filter(Boolean))).sort();
+  const channelSet = Array.from(new Set(salesData.map(d => d.channel).filter(Boolean))).sort();
+  const branchSet = branchFieldName ? Array.from(new Set(salesData.map(d => d[branchFieldName]).filter(Boolean))).sort() : [];
 
-  const channelSet = new Set(salesData.map(d=>d.channel));
-  const selectC = document.getElementById('channelFilter');
-  channelSet.forEach(c=>{
-    const opt = document.createElement('option');
-    opt.value = c;
-    opt.text = c;
-    selectC.add(opt);
-  });
+  // panels
+  const productPanel = document.getElementById('productPanel');
+  const channelPanel = document.getElementById('channelPanel');
+  const branchPanel = document.getElementById('branchPanel');
 
-  const branchSet = new Set(salesData.map(d=>d.branch));
-  const selectB = document.getElementById('branchFilter');
-  branchSet.forEach(b=>{
-    const opt = document.createElement('option');
-    opt.value = b;
-    opt.text = b;
-    selectB.add(opt);
-  });
+  // helper to render options with checkboxes
+  function renderPanel(panelEl, items, key) {
+    panelEl.innerHTML = ''; // clear
+    // 'Todos' checkbox first
+    const allRow = document.createElement('div');
+    allRow.className = 'dd-checkbox';
+    allRow.innerHTML = `<input type="checkbox" data-val="all" data-key="${key}" id="${key}_all"><label for="${key}_all" class="text-sm">Todos</label>`;
+    panelEl.appendChild(allRow);
 
-  document.getElementById('productFilter').addEventListener('change', updateDashboard);
-  document.getElementById('channelFilter').addEventListener('change', updateDashboard);
-  document.getElementById('branchFilter').addEventListener('change', updateDashboard);
+    items.forEach(it => {
+      const id = `${key}_${slug(it)}`;
+      const row = document.createElement('div');
+      row.className = 'dd-checkbox';
+      row.innerHTML = `<input type="checkbox" data-val="${escapeHtml(it)}" data-key="${key}" id="${id}"><label for="${id}" class="text-sm">${escapeHtml(it)}</label>`;
+      panelEl.appendChild(row);
+    });
 
-  const monthsInput = document.getElementById('monthsFilter');
+    // attach change listeners
+    panelEl.querySelectorAll('input[type=checkbox]').forEach(cb=>{
+      cb.addEventListener('change', onCheckboxChange);
+    });
+  }
+
+  renderPanel(productPanel, productSet, 'product');
+  renderPanel(channelPanel, channelSet, 'channel');
+  renderPanel(branchPanel, branchSet, 'branch');
+
+  // buttons open/close panels
+  setupDropdown('productBtn','productPanel','productBtnLabel');
+  setupDropdown('channelBtn','channelPanel','channelBtnLabel');
+  setupDropdown('branchBtn','branchPanel','branchBtnLabel');
+
+  // months controls
   document.getElementById('increaseMonths').addEventListener('click', ()=> {
-    monthsInput.value = parseInt(monthsInput.value)+1;
+    const el = document.getElementById('monthsFilter');
+    el.value = Math.max(1, parseInt(el.value||12) + 1);
     updateDashboard();
   });
   document.getElementById('decreaseMonths').addEventListener('click', ()=> {
-    if(parseInt(monthsInput.value)>1){
-      monthsInput.value = parseInt(monthsInput.value)-1;
-      updateDashboard();
-    }
-  });
-  monthsInput.addEventListener('change', updateDashboard);
-
-  document.getElementById('toggleNumbers').addEventListener('click', () => {
-    showCompact = !showCompact;
-    document.getElementById('toggleNumbers').textContent =
-      showCompact ? "Mostrar números exactos" : "Mostrar números compactos";
-    updateCards(); // solo tarjetas
-  });
-
-  document.getElementById('resetFilters').addEventListener('click', () => {
-    monthsInput.value = 12;
-    selectP.value = 'all';
-    selectC.value = 'all';
-    selectB.value = 'all';
+    const el = document.getElementById('monthsFilter');
+    el.value = Math.max(1, parseInt(el.value||12) - 1);
     updateDashboard();
   });
+  document.getElementById('monthsFilter').addEventListener('change', updateDashboard);
+
+  // switch toggle (visually same as before)
+  const toggle = document.getElementById('toggleSwitch');
+  toggle.addEventListener('click', () => {
+    showCompact = !showCompact;
+    toggle.classList.toggle('on', showCompact);
+    toggle.classList.toggle('off', !showCompact);
+    toggle.setAttribute('aria-pressed', String(showCompact));
+    updateCards();
+  });
+  // init
+  toggle.classList.add('on'); toggle.classList.remove('off');
+
+  // collapse button & reset
+  const collapseBtn = document.getElementById('collapseBtn');
+  const resetBtn = document.getElementById('resetFilters');
+  const sidebar = document.getElementById('sidebar');
+  const collapseIcon = document.getElementById('collapseIcon');
+
+  collapseBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('collapsed');
+    const collapsed = sidebar.classList.contains('collapsed');
+    collapseIcon.innerHTML = collapsed
+      ? `<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>`
+      : `<path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>`;
+  });
+
+  resetBtn.addEventListener('click', () => {
+    // months
+    document.getElementById('monthsFilter').value = 12;
+    // clear checkboxes -> select 'all'
+    ['product','channel','branch'].forEach(k => {
+      const panel = document.getElementById(k + 'Panel');
+      if (!panel) return;
+      panel.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = (cb.dataset.val === 'all'));
+      selection[k] = 'all';
+      updateBtnLabel(k);
+    });
+    showCompact = true;
+    const toggleBtn = document.getElementById('toggleSwitch');
+    toggleBtn.classList.add('on'); toggleBtn.classList.remove('off');
+    updateDashboard();
+  });
+
+  // metric selector
+  document.getElementById('metricSelector').addEventListener('change', updateDashboard);
 }
 
-function formatCompact(num) {
-  return Intl.NumberFormat("es-AR", {notation:"compact", maximumFractionDigits:1}).format(num);
+/* ---------- helpers ---------- */
+function slug(s) {
+  return String(s).toLowerCase().replace(/\s+/g,'_').replace(/[^\w\-]+/g,'');
 }
-function formatExact(num) {
-  return num.toLocaleString("es-AR");
+function escapeHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-function setValue(id, value, money=false) {
+/* open/close dropdown wiring */
+function setupDropdown(buttonId, panelId, labelId) {
+  const btn = document.getElementById(buttonId);
+  const panel = document.getElementById(panelId);
+  const label = document.getElementById(labelId);
+  if (!btn || !panel) return;
+
+  btn.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    const isHidden = panel.classList.contains('hidden');
+    // close other panels
+    document.querySelectorAll('.dd-panel').forEach(p => { if (p !== panel) p.classList.add('hidden'); });
+    if (isHidden) {
+      panel.classList.remove('hidden');
+      btn.setAttribute('aria-expanded','true');
+    } else {
+      panel.classList.add('hidden');
+      btn.setAttribute('aria-expanded','false');
+    }
+  });
+}
+
+/* close panels when clicking outside */
+function attachGlobalClicks() {
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.dd-panel') && !e.target.closest('.dd-btn')) {
+      document.querySelectorAll('.dd-panel').forEach(p => p.classList.add('hidden'));
+    }
+  });
+}
+
+/* checkbox change logic (handle 'Todos' mutual exclusion) */
+function onCheckboxChange(e) {
+  const cb = e.target;
+  const key = cb.dataset.key;
+  const val = cb.dataset.val;
+  const panel = document.getElementById(key + 'Panel');
+  if (!panel) return;
+
+  if (val === 'all' && cb.checked) {
+    // uncheck others
+    panel.querySelectorAll('input[type=checkbox]').forEach(i => {
+      if (i.dataset.val !== 'all') i.checked = false;
+    });
+    selection[key] = 'all';
+  } else if (val === 'all' && !cb.checked) {
+    // if unchecking 'all' -> keep nothing selected (treat as all)
+    selection[key] = 'all';
+    cb.checked = true; // enforce at least 'all' selected for simplicity
+  } else {
+    // uncheck 'all' when other selected
+    const allCb = panel.querySelector('input[data-val="all"]');
+    if (allCb) allCb.checked = false;
+    // update selection array
+    const chosen = Array.from(panel.querySelectorAll('input[type=checkbox]'))
+      .filter(i => i.checked && i.dataset.val !== 'all')
+      .map(i => i.dataset.val);
+    selection[key] = (chosen.length === 0) ? 'all' : chosen;
+  }
+
+  updateBtnLabel(key);
+  updateDashboard();
+}
+
+/* update button label to show summary */
+function updateBtnLabel(key) {
+  const label = document.getElementById(key + 'BtnLabel');
+  const sel = selection[key];
+  if (!label) return;
+  if (sel === 'all') {
+    label.textContent = 'Todos';
+  } else if (Array.isArray(sel)) {
+    if (sel.length === 1) label.textContent = sel[0];
+    else label.textContent = `${sel.length} seleccionados`;
+  } else {
+    label.textContent = 'Todos';
+  }
+}
+
+/* ---------- formatting ---------- */
+function compactFormat(n){
+  if (isNaN(n)) return '0';
+  const abs = Math.abs(n);
+  if (abs >= 1_000_000) return (n/1_000_000).toFixed(1) + ' M';
+  if (abs >= 1_000) return (n/1_000).toFixed(1) + ' K';
+  return Math.round(n).toString();
+}
+function exactFormat(n, decimals=0){
+  if (isNaN(n)) return '0';
+  if (decimals>0) return n.toLocaleString('es-AR', {minimumFractionDigits:decimals, maximumFractionDigits:decimals});
+  return Math.round(n).toLocaleString('es-AR');
+}
+
+/* ---------- setValue / delta ---------- */
+function setValue(id, value, money=false, options={forceExact:false, decimals:0}) {
   const el = document.getElementById(id);
-  el.textContent = showCompact ? formatCompact(value) : (money ? "$"+formatExact(value):formatExact(value));
-}
-
-function setDelta(id, current, previous) {
-  const el = document.getElementById(id);
-  if(previous === 0){
-    el.textContent = '';
+  if (!el) return;
+  if (options.forceExact) {
+    el.textContent = (money ? '$' : '') + exactFormat(value, options.decimals);
     return;
   }
+  if (showCompact) el.textContent = (money ? '$' : '') + compactFormat(value);
+  else el.textContent = (money ? '$' : '') + exactFormat(value, options.decimals);
+}
+function setDelta(id, current, previous) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (!previous || previous === 0) { el.textContent = ''; el.className='text-lg mt-1'; return; }
   const delta = ((current - previous) / previous) * 100;
-  const arrow = delta > 0 ? '▲' : delta < 0 ? '▼' : '';
-  const color = delta > 0 ? 'text-green-500' : 'text-red-500';
+  const triangle = delta > 0 ? '▲' : delta < 0 ? '▼' : '';
+  const color = delta > 0 ? 'text-green-500' : (delta < 0 ? 'text-red-500' : 'text-gray-500');
   el.className = `text-lg mt-1 ${color}`;
-  el.textContent = `${arrow} ${Math.abs(delta).toFixed(1)}%`;
+  el.textContent = `${triangle} ${Math.abs(delta).toFixed(1)}%`;
 }
 
+/* ---------- selection helpers ---------- */
+function getSelectedValuesForFiltering() {
+  // returns arrays or 'all'
+  return {
+    product: selection.product,
+    channel: selection.channel,
+    branch: selection.branch
+  };
+}
+
+/* ---------- updateCards & chart (same logic, use YYYY-MM truncation) ---------- */
 function updateCards() {
-  const productFilter = document.getElementById('productFilter').value;
-  const channelFilter = document.getElementById('channelFilter').value;
-  const branchFilter = document.getElementById('branchFilter').value;
+  const sel = getSelectedValuesForFiltering();
   const months = parseInt(document.getElementById('monthsFilter').value) || 12;
 
-  let filtered = [...salesData];
-  if(productFilter !== 'all') filtered = filtered.filter(d=>d.product_name===productFilter);
-  if(channelFilter !== 'all') filtered = filtered.filter(d=>d.channel===channelFilter);
-  if(branchFilter !== 'all') filtered = filtered.filter(d=>d.branch===branchFilter);
+  let filtered = salesData.slice();
+  if (sel.product !== 'all') filtered = filtered.filter(d => sel.product.includes(d.product_name));
+  if (sel.channel !== 'all') filtered = filtered.filter(d => sel.channel.includes(d.channel));
+  if (branchFieldName && sel.branch !== 'all') filtered = filtered.filter(d => sel.branch.includes(d[branchFieldName]));
 
-  const dates = [...new Set(filtered.map(d=>d.date))].sort();
-  const lastDates = dates.slice(-months);
-  filtered = filtered.filter(d=>lastDates.includes(d.date));
+  // group by YYYY-MM
+  const dateKeys = Array.from(new Set(filtered.map(d => (d.date||'').slice(0,7)).filter(Boolean))).sort();
+  const lastKeys = dateKeys.slice(-months);
+  filtered = filtered.filter(d => lastKeys.includes((d.date||'').slice(0,7)));
 
-  // totales históricos
-  const totalRevenue = filtered.reduce((sum,d)=>sum+d.revenue,0);
-  const totalUnits = filtered.reduce((sum,d)=>sum+d.units,0);
-  const avgPrice = totalUnits ? totalRevenue/totalUnits : 0;
+  const totalRevenue = filtered.reduce((s,d)=>s + (d.revenue || 0), 0);
+  const totalUnits = filtered.reduce((s,d)=>s + (d.units || 0), 0);
+  const avgPrice = totalUnits ? totalRevenue / totalUnits : 0;
 
   setValue('salesCard', totalRevenue, true);
-  setValue('customersCard', totalUnits);
-  setValue('ordersCard', avgPrice, true);
+  setValue('customersCard', totalUnits, false);
+  // avg price always exact 1 decimal
+  setValue('ordersCard', avgPrice, true, {forceExact:true, decimals:1});
 
-  // último mes
-  const monthsSet = [...new Set(filtered.map(d=>d.date))].sort();
-  const lastMonth = monthsSet[monthsSet.length-1];
-  const prevMonth = monthsSet[monthsSet.length-2];
+  const monthsAvailable = Array.from(new Set(filtered.map(d => (d.date||'').slice(0,7)).filter(Boolean))).sort();
+  const lastMonth = monthsAvailable[monthsAvailable.length - 1];
+  const prevMonth = monthsAvailable[monthsAvailable.length - 2];
 
-  const lastData = filtered.filter(d=>d.date===lastMonth);
-  const prevData = filtered.filter(d=>d.date===prevMonth);
+  const lastData = filtered.filter(d => (d.date||'').slice(0,7) === lastMonth);
+  const prevData = filtered.filter(d => (d.date||'').slice(0,7) === prevMonth);
 
-  const lastRevenue = lastData.reduce((sum,d)=>sum+d.revenue,0);
-  const lastUnits = lastData.reduce((sum,d)=>sum+d.units,0);
-  const lastAvgPrice = lastUnits ? lastRevenue/lastUnits : 0;
+  const lastRevenue = lastData.reduce((s,d)=>s + (d.revenue||0),0);
+  const lastUnits = lastData.reduce((s,d)=>s + (d.units||0),0);
+  const lastAvgPrice = lastUnits ? lastRevenue / lastUnits : 0;
 
-  const prevRevenue = prevData.reduce((sum,d)=>sum+d.revenue,0);
-  const prevUnits = prevData.reduce((sum,d)=>sum+d.units,0);
-  const prevAvgPrice = prevUnits ? prevRevenue/prevUnits : 0;
+  const prevRevenue = prevData.reduce((s,d)=>s + (d.revenue||0),0);
+  const prevUnits = prevData.reduce((s,d)=>s + (d.units||0),0);
+  const prevAvgPrice = prevUnits ? prevRevenue / prevUnits : 0;
 
   setValue('lastMonthRevenue', lastRevenue, true);
-  setValue('lastMonthUnits', lastUnits);
-  // avg price siempre 1 decimal
-  document.getElementById('lastMonthAvgPrice').textContent = `$${lastAvgPrice.toFixed(1)}`;
+  setValue('lastMonthUnits', lastUnits, false);
+  setValue('lastMonthAvgPrice', lastAvgPrice, true, {forceExact:true, decimals:1});
 
   setDelta('lastMonthRevenueDelta', lastRevenue, prevRevenue);
   setDelta('lastMonthUnitsDelta', lastUnits, prevUnits);
-  // avg price delta igual, pero solo triángulo
   setDelta('lastMonthAvgPriceDelta', lastAvgPrice, prevAvgPrice);
 }
 
 function updateChart(filteredData) {
+  const metric = document.getElementById('metricSelector').value || 'revenue';
   const grouped = {};
   filteredData.forEach(d => {
-    if(!grouped[d.date]) grouped[d.date]=0;
-    grouped[d.date]+=d.revenue;
+    const key = (d.date||'').slice(0,7);
+    if (!key) return;
+    if (!grouped[key]) grouped[key] = 0;
+    grouped[key] += (metric === 'revenue' ? (d.revenue||0) : (d.units||0));
   });
 
   const labels = Object.keys(grouped).sort();
-  const values = labels.map(l=>grouped[l]);
+  const values = labels.map(k => grouped[k]);
 
-  if(chart) chart.destroy();
+  let titleText = `Evolución temporal de ${metric === 'revenue' ? 'Revenue' : 'Units'}`;
+  if (labels.length >= 1) titleText += ` entre ${labels[0]} y ${labels[labels.length - 1]}`;
+  document.getElementById('chartTitle').textContent = titleText;
+
+  if (chart) chart.destroy();
   const ctx = document.getElementById('salesChart').getContext('2d');
   chart = new Chart(ctx, {
     type: 'line',
-    data:{
-      labels: labels,
-      datasets:[{
-        label:'Revenue',
+    data: {
+      labels,
+      datasets: [{
+        label: '',
         data: values,
-        borderColor:'rgba(59,130,246,1)',
-        backgroundColor:'rgba(59,130,246,0.2)',
-        fill:true,
-        tension:0.3
+        borderColor: 'rgba(59,130,246,1)',
+        backgroundColor: 'rgba(59,130,246,0.12)',
+        fill: true,
+        tension: 0.3,
+        pointRadius: 3
       }]
     },
-    options:{
-      responsive:true,
-      plugins:{legend:{display:false}},
-      scales:{x:{display:true},y:{display:true}}
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: { x: { display: true }, y: { display: true } }
     }
   });
 }
 
+/* ---------- main update flow ---------- */
 function updateDashboard() {
-  const productFilter = document.getElementById('productFilter').value;
-  const channelFilter = document.getElementById('channelFilter').value;
-  const branchFilter = document.getElementById('branchFilter').value;
+  const sel = getSelectedValuesForFiltering();
   const months = parseInt(document.getElementById('monthsFilter').value) || 12;
 
-  let filtered = [...salesData];
-  if(productFilter !== 'all') filtered = filtered.filter(d=>d.product_name===productFilter);
-  if(channelFilter !== 'all') filtered = filtered.filter(d=>d.channel===channelFilter);
-  if(branchFilter !== 'all') filtered = filtered.filter(d=>d.branch===branchFilter);
+  let filtered = salesData.slice();
+  if (sel.product !== 'all') filtered = filtered.filter(d => sel.product.includes(d.product_name));
+  if (sel.channel !== 'all') filtered = filtered.filter(d => sel.channel.includes(d.channel));
+  if (branchFieldName && sel.branch !== 'all') filtered = filtered.filter(d => sel.branch.includes(d[branchFieldName]));
 
-  const dates = [...new Set(filtered.map(d=>d.date))].sort();
-  const lastDates = dates.slice(-months);
-  filtered = filtered.filter(d=>lastDates.includes(d.date));
+  // limit to last N months (YYYY-MM)
+  const dateKeys = Array.from(new Set(filtered.map(d => (d.date||'').slice(0,7)).filter(Boolean))).sort();
+  const lastKeys = dateKeys.slice(-months);
+  filtered = filtered.filter(d => lastKeys.includes((d.date||'').slice(0,7)));
 
   updateCards();
   updateChart(filtered);
 }
 
+/* bootstrap */
 loadCSV();
