@@ -6,87 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <style>
-    /* Toggle switch */
-    .toggle {
-      width: 48px;
-      height: 26px;
-      border-radius: 9999px;
-      padding: 3px;
-      display: inline-flex;
-      align-items: center;
-      cursor: pointer;
-      transition: background-color .18s;
-    }
-    .toggle .knob {
-      width: 20px;
-      height: 20px;
-      border-radius: 9999px;
-      background: white;
-      box-shadow: 0 1px 3px rgba(0,0,0,.2);
-      transform: translateX(0);
-      transition: transform .18s;
-    }
-    .toggle.on { background-color: #2563eb; } /* azul */
-    .toggle.off { background-color: #9ca3af; } /* gris */
-    .toggle.on .knob { transform: translateX(22px); }
-    .toggle.off .knob { transform: translateX(0); }
-
-    /* collapsed sidebar behavior */
-    aside.collapsed { width: 64px !important; }
-    .hide-when-collapsed { display: block; }
-    aside.collapsed .hide-when-collapsed { display: none; }
-    .show-icon-only { display: none; }
-    aside.collapsed .show-icon-only { display: block; }
-
-    /* months input in-line text */
-    #monthsFilter { width: 4rem; text-align: center; }
-
-    /* custom dropdown styles */
-    .dd-btn {
-      background: #374151; color: #fff;
-      padding: 0.5rem 0.75rem; border-radius: 0.375rem;
-      width: 100%; text-align: left;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .dd-panel {
-      position: absolute;
-      background: #374151; /* grisaceo-azulado igual que botones */
-      border-radius: 0.5rem;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-      z-index: 50;
-      width: 16rem;
-      max-height: 240px;
-      overflow: auto;
-      padding: 0.5rem;
-    }
-    .dd-checkbox {
-      display:flex; align-items:center; gap:0.5rem; padding:0.4rem 0.25rem; border-radius:0.25rem;
-    }
-
-    /* remove hover effect */
-    .dd-checkbox:hover { background: none; }
-
-    /* collapse button style */
-    #collapseBtn, #resetFilters {
-      background: transparent;
-      border: 2px solid rgba(255,255,255,0.3); /* un poco más grueso */
-      color: #fff;
-      padding: .25rem .5rem;
-      border-radius: .375rem;
-      transition: all .2s;
-    }
-    #collapseBtn:hover, #resetFilters:hover {
-      background: #fff;
-      color: #2563eb; /* azul original para letras */
-    }
-
-    /* Chart gradient fill */
-    .gradient-bg {
-      background: linear-gradient(to top, rgba(59,130,246,0.3), rgba(59,130,246,0));
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body class="bg-gray-100 font-sans">
 
@@ -107,19 +27,18 @@
       </div>
     </div>
 
-    <!-- Últimos meses (input in-line) -->
+    <!-- Visualizar últimos meses -->
     <div class="mb-4 hide-when-collapsed">
-      <label class="block text-gray-200">
-        Visualizar últimos <input id="monthsFilter" type="number" value="12" min="1" class="rounded bg-gray-700 text-white focus:outline-none inline-block"> meses
+      <label class="block mb-1 text-gray-200">
+        Visualizar últimos <input id="monthsFilter" type="number" value="12" min="1" class="inline-block w-16 p-1 rounded bg-gray-700 text-white text-center focus:outline-none"> meses
       </label>
     </div>
 
     <!-- Dropdowns container -->
-    <div class="space-y-3">
-
+    <div class="space-y-3 hide-when-collapsed">
       <!-- Product dropdown -->
       <div class="relative">
-        <label class="block mb-1 hide-when-collapsed text-gray-200">Producto</label>
+        <label class="block mb-1 text-gray-200">Producto</label>
         <button id="productBtn" class="dd-btn" aria-haspopup="listbox" aria-expanded="false">
           <span id="productBtnLabel" class="text-sm text-gray-200">Todos</span>
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-300" viewBox="0 0 20 20" fill="currentColor">
@@ -131,7 +50,7 @@
 
       <!-- Channel dropdown -->
       <div class="relative">
-        <label class="block mb-1 hide-when-collapsed text-gray-200">Canal</label>
+        <label class="block mb-1 text-gray-200">Canal</label>
         <button id="channelBtn" class="dd-btn" aria-haspopup="listbox" aria-expanded="false">
           <span id="channelBtnLabel" class="text-sm text-gray-200">Todos</span>
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-300" viewBox="0 0 20 20" fill="currentColor">
@@ -143,7 +62,7 @@
 
       <!-- Branch dropdown -->
       <div class="relative">
-        <label class="block mb-1 hide-when-collapsed text-gray-200">Sucursal</label>
+        <label class="block mb-1 text-gray-200">Sucursal</label>
         <button id="branchBtn" class="dd-btn" aria-haspopup="listbox" aria-expanded="false">
           <span id="branchBtnLabel" class="text-sm text-gray-200">Todos</span>
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-300" viewBox="0 0 20 20" fill="currentColor">
@@ -161,11 +80,8 @@
   <!-- Main Content -->
   <main class="flex-1 p-6 overflow-auto">
 
-    <!-- Header -->
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-3xl font-bold">Retail Dashboard</h1>
-
-      <!-- Switch compact/exact -->
       <div class="flex items-center gap-3">
         <span class="text-sm text-gray-600 hide-when-collapsed">Vista compacta</span>
         <button id="toggleSwitch" class="toggle on" aria-pressed="true" title="Alternar vista compacta/exacta">
@@ -174,50 +90,27 @@
       </div>
     </div>
 
-    <!-- Top Cards -->
+    <!-- Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
         <span class="text-gray-500">Total Revenue</span>
         <span id="salesCard" class="text-xl md:text-2xl font-bold">$0</span>
       </div>
-
       <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
         <span class="text-gray-500">Total Units</span>
         <span id="customersCard" class="text-xl md:text-2xl font-bold">0</span>
       </div>
-
       <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
         <span class="text-gray-500">Average Price</span>
         <span id="ordersCard" class="text-xl md:text-2xl font-bold">$0.0</span>
       </div>
     </div>
 
-    <!-- Último mes cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-      <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
-        <span class="text-gray-500">Revenue Último Mes</span>
-        <span id="lastMonthRevenue" class="text-xl md:text-2xl font-bold">$0</span>
-        <span id="lastMonthRevenueDelta" class="text-lg mt-1 text-green-500"></span>
-      </div>
-
-      <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
-        <span class="text-gray-500">Units Último Mes</span>
-        <span id="lastMonthUnits" class="text-xl md:text-2xl font-bold">0</span>
-        <span id="lastMonthUnitsDelta" class="text-lg mt-1 text-green-500"></span>
-      </div>
-
-      <div class="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300">
-        <span class="text-gray-500">Avg Price Último Mes</span>
-        <span id="lastMonthAvgPrice" class="text-xl md:text-2xl font-bold">$0.0</span>
-        <span id="lastMonthAvgPriceDelta" class="text-lg mt-1 text-green-500"></span>
-      </div>
-    </div>
-
     <!-- Chart -->
     <div class="bg-white rounded-lg shadow-lg p-6">
       <div class="flex justify-between items-center mb-4">
-        <span class="text-gray-700 font-semibold mr-2">Métrica:</span>
-        <select id="metricSelector" class="p-2 rounded bg-blue-100 text-blue-800 font-semibold border border-blue-300">
+        <span class="text-gray-700 font-medium">Métrica</span>
+        <select id="metricSelector" class="metric-select p-2 rounded text-gray-700">
           <option value="revenue">Revenue</option>
           <option value="units">Units</option>
         </select>
