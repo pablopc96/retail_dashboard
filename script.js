@@ -1,4 +1,4 @@
-/* script.js - Dashboard funcional */
+/* script.js - Dashboard funcional con últimas tarjetas */
 let salesData = [];
 let chart = null;
 let showCompact = true;
@@ -165,6 +165,7 @@ function updateBtnLabel(key){
 /* ---------- Dashboard ---------- */
 function updateDashboard() {
   updateCards();
+  updateLastMonthCards();
 }
 
 function updateCards(){
@@ -188,6 +189,50 @@ function updateCards(){
   setValue('ordersCard', avgPrice,true,{forceExact:true,decimals:1});
 
   updateChart(filtered);
+}
+
+/* ---------- Último mes y delta ---------- */
+function updateLastMonthCards() {
+  const sel={...selection};
+  let filtered=salesData.slice();
+  if(sel.product!=='all') filtered=filtered.filter(d=>sel.product.includes(d.product_name));
+  if(sel.channel!=='all') filtered=filtered.filter(d=>sel.channel.includes(d.channel));
+  if(branchFieldName && sel.branch!=='all') filtered=filtered.filter(d=>sel.branch.includes(d[branchFieldName]));
+
+  const monthsSorted=Array.from(new Set(filtered.map(d=>(d.date||'').slice(0,7)))).sort();
+  if(monthsSorted.length===0) return;
+
+  const lastMonth = monthsSorted[monthsSorted.length-1];
+  const prevMonth = monthsSorted.length>1 ? monthsSorted[monthsSorted.length-2] : null;
+
+  const lastData = filtered.filter(d=>(d.date||'').slice(0,7)===lastMonth);
+  const prevData = prevMonth ? filtered.filter(d=>(d.date||'').slice(0,7)===prevMonth) : [];
+
+  const revLast = lastData.reduce((s,d)=>s+(d.revenue||0),0);
+  const unitsLast = lastData.reduce((s,d)=>s+(d.units||0),0);
+  const priceLast = unitsLast ? revLast/unitsLast : 0;
+
+  const revPrev = prevData.reduce((s,d)=>s+(d.revenue||0),0);
+  const unitsPrev = prevData.reduce((s,d)=>s+(d.units||0),0);
+  const pricePrev = unitsPrev ? revPrev/unitsPrev : 0;
+
+  setValue('lastMonthRevenue', revLast,true);
+  setValue('lastMonthUnits', unitsLast,false);
+  setValue('lastMonthAvgPrice', priceLast,true,{forceExact:true,decimals:1});
+
+  setDelta('lastMonthRevenueDelta', revLast, revPrev);
+  setDelta('lastMonthUnitsDelta', unitsLast, unitsPrev);
+  setDelta('lastMonthAvgPriceDelta', priceLast, pricePrev);
+}
+
+function setDelta(elId, current, previous){
+  const el=document.getElementById(elId);
+  if(!el) return;
+  if(previous===0||previous===null){ el.textContent=''; return; }
+  const diff = current - previous;
+  const pct = (diff/previous)*100;
+  el.textContent = `${diff>=0?'+':''}${diff.toLocaleString('es-AR')} (${pct.toFixed(1)}%)`;
+  el.style.color = diff>=0 ? 'green' : 'red';
 }
 
 /* ---------- Chart ---------- */
@@ -229,3 +274,5 @@ function setupMonthButtons() {
   document.getElementById('increaseMonths').addEventListener('click', () => { monthsEl.value = parseInt(monthsEl.value||12)+1; updateDashboard(); });
   document.getElementById('decreaseMonths').addEventListener('click', () => { monthsEl.value = Math.max(1,parseInt(monthsEl.value||12)-1); updateDashboard(); });
 }
+
+loadCSV();
