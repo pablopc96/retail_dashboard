@@ -266,4 +266,8 @@ function setupToggleCollapseReset(){
   });
 }
 
+/* ---------- Helpers ---------- */
+function slug(str){ return str.toLowerCase().replace(/\s+/g,'_'); }
+function escapeHtml(text){ const map={ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}; return text.replace(/[&<>"']/g,m=>map[m]); }
+
 loadCSV();
