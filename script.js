@@ -1,102 +1,96 @@
-/* script.js - Dashboard funcional con comentarios explicativos */
+/* script.js - Dashboard funcional corregido */
+let salesData = [];
+let chart = null;
+let showCompact = true;
+let branchFieldName = null;
+const selection = { product: 'all', channel: 'all', branch: 'all' };
 
-// Arreglos y variables globales
-let salesData = [];          // Aquí se almacena toda la información del CSV
-let chart = null;            // Referencia al gráfico Chart.js
-let showCompact = true;      // Control del toggle de vista compacta
-let branchFieldName = null;  // Nombre de la columna que representa la sucursal en el CSV
-const selection = { product: 'all', channel: 'all', branch: 'all' }; // Filtros activos
-
-/* ---------- Carga inicial del CSV ---------- */
+/* ---------- Cargar CSV ---------- */
 async function loadCSV() {
   try {
-    const res = await fetch('data/ventas.csv');  // Se obtiene el CSV desde la carpeta data
+    const res = await fetch('data/ventas.csv');
     const text = await res.text();
-    parseCSV(text);          // Se convierte el CSV en un arreglo de objetos
-    populateFilters();       // Se generan los dropdowns de filtros
-    updateDashboard();       // Se renderiza el dashboard inicial
+    parseCSV(text);
+    populateFilters();
+    updateDashboard();
   } catch (err) {
     console.error('Error cargando CSV:', err);
   }
 }
 
-/* ---------- Parse CSV a objetos ---------- */
+/* ---------- Parse CSV ---------- */
 function parseCSV(csvText) {
-  const lines = csvText.trim().split('\n').filter(Boolean); // Separar por líneas y eliminar vacías
-  const headers = lines[0].split(',').map(h => h.trim());   // Primera fila: headers
-
-  // Detectar qué columna representa la sucursal
+  const lines = csvText.trim().split('\n').filter(Boolean);
+  const headers = lines[0].split(',').map(h => h.trim());
   const possibleBranches = ['branch','sucursal','store','store_name','branch_name'];
   branchFieldName = headers.find(h => possibleBranches.includes(h.toLowerCase())) || null;
 
-  // Convertir cada línea en objeto
   salesData = lines.slice(1).map(line => {
     const cols = line.split(',');
     const obj = {};
     headers.forEach((h, i) => {
       const key = h.trim();
       const raw = cols[i] !== undefined ? cols[i].trim() : '';
-      if (['units','price','revenue'].includes(key)) obj[key] = parseFloat(raw) || 0;
+      if (['units','price','revenue'].includes(key)) obj[key] = parseFloat(raw)||0;
       else obj[key] = raw;
     });
     return obj;
   });
 }
 
-/* ---------- Generar los filtros ---------- */
+/* ---------- Populate filters ---------- */
 function populateFilters() {
-  // Generar sets únicos para cada filtro
   const productSet = Array.from(new Set(salesData.map(d=>d.product_name).filter(Boolean))).sort();
   const channelSet = Array.from(new Set(salesData.map(d=>d.channel).filter(Boolean))).sort();
   const branchSet = branchFieldName ? Array.from(new Set(salesData.map(d=>d[branchFieldName]).filter(Boolean))).sort() : [];
 
-  // Función para renderizar cada panel de dropdown
   function renderPanel(panelEl, items, key){
     panelEl.innerHTML = '';
+    // Checkbox "Todos"
     const allRow = document.createElement('div');
     allRow.className = 'dd-checkbox';
-    allRow.innerHTML = `<input type="checkbox" data-val="all" data-key="${key}" id="${key}_all"><label for="${key}_all" class="text-sm">Todos</label>`;
+    allRow.innerHTML = `<input type="checkbox" data-val="all" data-key="${key}" id="${key}_all" checked>
+                        <label for="${key}_all" class="text-sm">Todos</label>`;
     panelEl.appendChild(allRow);
 
     items.forEach(it => {
       const id = `${key}_${slug(it)}`;
       const row = document.createElement('div');
       row.className = 'dd-checkbox';
-      row.innerHTML = `<input type="checkbox" data-val="${escapeHtml(it)}" data-key="${key}" id="${id}"><label for="${id}" class="text-sm">${escapeHtml(it)}</label>`;
+      row.innerHTML = `<input type="checkbox" data-val="${escapeHtml(it)}" data-key="${key}" id="${id}">
+                       <label for="${id}" class="text-sm">${escapeHtml(it)}</label>`;
       panelEl.appendChild(row);
     });
 
-    // Listener para cambios de checkbox
     panelEl.querySelectorAll('input[type=checkbox]').forEach(cb => cb.addEventListener('change', onCheckboxChange));
   }
 
-  // Renderizar cada dropdown
   renderPanel(document.getElementById('productPanel'), productSet, 'product');
   renderPanel(document.getElementById('channelPanel'), channelSet, 'channel');
   renderPanel(document.getElementById('branchPanel'), branchSet, 'branch');
 
-  // Inicializar dropdowns, botones de meses y toggle
   setupDropdowns();
   setupMonthControls();
   setupToggleCollapseReset();
+
   document.getElementById('metricSelector').addEventListener('change', updateDashboard);
 }
 
 /* ---------- Dropdowns ---------- */
 function setupDropdowns() {
-  // Mostrar/ocultar panel al hacer click en botón
   document.querySelectorAll('.dd-btn').forEach(btn=>{
     const panel = btn.nextElementSibling;
     btn.addEventListener('click', e=>{
       e.stopPropagation();
       const isHidden = panel.classList.contains('hidden');
-      document.querySelectorAll('.dd-panel').forEach(p=>{ if(p!==panel) p.classList.add('hidden'); });
+      document.querySelectorAll('.dd-panel').forEach(p=>{
+        if(p!==panel) p.classList.add('hidden');
+      });
       panel.classList.toggle('hidden', !isHidden);
       btn.setAttribute('aria-expanded', !isHidden);
     });
   });
 
-  // Cerrar todos los paneles al hacer click fuera
   document.addEventListener('click', e=>{
     if(!e.target.closest('.dd-panel') && !e.target.closest('.dd-btn')){
       document.querySelectorAll('.dd-panel').forEach(p=>p.classList.add('hidden'));
@@ -111,20 +105,25 @@ function onCheckboxChange(e){
   if(!panel) return;
 
   if(val==='all' && cb.checked){
-    panel.querySelectorAll('input[type=checkbox]').forEach(i=>{if(i.dataset.val!=='all') i.checked=false;});
+    panel.querySelectorAll('input[type=checkbox]').forEach(i=>{
+      if(i.dataset.val!=='all') i.checked=false;
+    });
     selection[key]='all';
   } else if(val==='all' && !cb.checked){
-    selection[key]='all'; cb.checked=true;
+    cb.checked=true; // nunca desmarcar "Todos"
+    selection[key]='all';
   } else {
     panel.querySelector('input[data-val="all"]').checked=false;
-    const chosen = Array.from(panel.querySelectorAll('input[type=checkbox]')).filter(i=>i.checked && i.dataset.val!=='all').map(i=>i.dataset.val);
+    const chosen = Array.from(panel.querySelectorAll('input[type=checkbox]'))
+                        .filter(i=>i.checked && i.dataset.val!=='all')
+                        .map(i=>i.dataset.val);
     selection[key] = chosen.length ? chosen : 'all';
+    if(selection[key]==='all') panel.querySelector('input[data-val="all"]').checked=true;
   }
   updateBtnLabel(key);
   updateDashboard();
 }
 
-// Actualiza la etiqueta del botón según selección
 function updateBtnLabel(key){
   const label = document.getElementById(key+'BtnLabel');
   const sel = selection[key];
@@ -134,11 +133,11 @@ function updateBtnLabel(key){
 
 /* ---------- Dashboard ---------- */
 function updateDashboard() {
-  updateCards();         // Actualiza tarjetas principales
-  updateLastMonthCards();// Actualiza tarjetas del último mes con delta
+  updateCards();
+  updateLastMonthCards();
 }
 
-/* ---------- Tarjetas principales ---------- */
+/* ---------- Cards principales ---------- */
 function updateCards(){
   const sel = {...selection};
   const months = parseInt(document.getElementById('monthsFilter').value)||12;
@@ -147,7 +146,6 @@ function updateCards(){
   if(sel.channel!=='all') filtered=filtered.filter(d=>sel.channel.includes(d.channel));
   if(branchFieldName && sel.branch!=='all') filtered=filtered.filter(d=>sel.branch.includes(d[branchFieldName]));
 
-  // Obtener meses a mostrar
   const dateKeys = Array.from(new Set(filtered.map(d=>(d.date||'').slice(0,7)))).sort();
   const lastKeys = dateKeys.slice(-months);
   filtered = filtered.filter(d=>lastKeys.includes((d.date||'').slice(0,7)));
@@ -160,7 +158,7 @@ function updateCards(){
   setValue('customersCard', totalUnits,false);
   setValue('ordersCard', avgPrice,true,{forceExact:true,decimals:1});
 
-  updateChart(filtered); // Actualiza el gráfico
+  updateChart(filtered);
 }
 
 /* ---------- Último mes y delta ---------- */
@@ -197,7 +195,6 @@ function updateLastMonthCards() {
   setDelta('lastMonthAvgPriceDelta', priceLast, pricePrev);
 }
 
-// Setear delta visualmente
 function setDelta(elId, current, previous){
   const el=document.getElementById(elId);
   if(!el) return;
@@ -212,27 +209,20 @@ function setDelta(elId, current, previous){
 function updateChart(filteredData){
   const metric=document.getElementById('metricSelector').value||'revenue';
   const grouped={};
-
-  // Agrupar por mes
   filteredData.forEach(d=>{
     const key=(d.date||'').slice(0,7); if(!key)return;
     if(!grouped[key]) grouped[key]=0;
     grouped[key]+=metric==='revenue'? (d.revenue||0):(d.units||0);
   });
-
   const labels=Object.keys(grouped).sort();
   const values=labels.map(k=>grouped[k]);
 
-  // Destruir chart previo
   if(chart) chart.destroy();
   const ctx=document.getElementById('salesChart').getContext('2d');
-
-  // Gradiente de fondo
   const gradient = ctx.createLinearGradient(0,0,0,ctx.canvas.height);
   gradient.addColorStop(0,'rgba(59,130,246,0.3)');
   gradient.addColorStop(1,'rgba(59,130,246,0.05)');
 
-  // Crear chart
   chart=new Chart(ctx,{
     type:'line',
     data:{ labels, datasets:[{ label:'', data:values, borderColor:'rgba(59,130,246,1)', backgroundColor:gradient, fill:true, tension:0.3, pointRadius:3 }] },
@@ -250,8 +240,15 @@ function setValue(id,value,money=false,options={forceExact:false,decimals:0}){
 /* ---------- Mes + / - y Toggle/Collapse/Reset ---------- */
 function setupMonthControls() {
   const monthsEl = document.getElementById('monthsFilter');
-  document.getElementById('increaseMonths').addEventListener('click', ()=>{ monthsEl.value=parseInt(monthsEl.value||12)+1; updateDashboard(); });
-  document.getElementById('decreaseMonths').addEventListener('click', ()=>{ monthsEl.value=Math.max(1,parseInt(monthsEl.value||12)-1); updateDashboard(); });
+  document.getElementById('increaseMonths').addEventListener('click', ()=>{
+    monthsEl.value=parseInt(monthsEl.value||12)+1;
+    updateDashboard();
+  });
+  document.getElementById('decreaseMonths').addEventListener('click', ()=>{
+    monthsEl.value=Math.max(1,parseInt(monthsEl.value||12)-1);
+    updateDashboard();
+  });
+  monthsEl.addEventListener('change', ()=>updateDashboard());
 }
 
 function setupToggleCollapseReset(){
@@ -261,7 +258,6 @@ function setupToggleCollapseReset(){
   const sidebar = document.getElementById('sidebar');
   const collapseIcon = document.getElementById('collapseIcon');
 
-  // Toggle compacta/exacta
   toggle.addEventListener('click', ()=>{
     showCompact=!showCompact;
     toggle.classList.toggle('on',showCompact);
@@ -270,7 +266,6 @@ function setupToggleCollapseReset(){
     updateCards();
   });
 
-  // Collapse/expand sidebar
   collapseBtn.addEventListener('click', ()=>{
     sidebar.classList.toggle('collapsed');
     document.querySelectorAll('.hide-when-collapsed').forEach(el=>el.style.display=sidebar.classList.contains('collapsed')?'none':'block');
@@ -279,7 +274,6 @@ function setupToggleCollapseReset(){
       : `<path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>`;
   });
 
-  // Reset filtros
   resetBtn.addEventListener('click', ()=>{
     document.getElementById('monthsFilter').value=12;
     ['product','channel','branch'].forEach(k=>{
@@ -293,9 +287,8 @@ function setupToggleCollapseReset(){
   });
 }
 
-// Inicialización
-loadCSV();
-
 /* ---------- Helpers ---------- */
-function slug(str){ return str.toLowerCase().replace(/\s+/g,'_'); }
-function escapeHtml(text){ const map={'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}; return text.replace(/[&<>"']/g,m=>map[m]); }
+function slug(text){ return text.toLowerCase().replace(/\s+/g,'_').replace(/[^\w\-]+/g,''); }
+function escapeHtml(text){ const div=document.createElement('div'); div.textContent=text; return div.innerHTML; }
+
+window.onload = () => { loadCSV(); };
