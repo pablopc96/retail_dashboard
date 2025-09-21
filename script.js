@@ -1,281 +1,251 @@
-/* script.js - Dashboard funcional y filtros corregidos */
 let salesData = [];
-let chart = null;
+let chart;
 let showCompact = true;
-let branchFieldName = null;
-const selection = { product: 'all', channel: 'all', branch: 'all' };
+let currentMetric = "revenue";
 
 async function loadCSV() {
-  try {
-    const res = await fetch('data/ventas.csv');
-    const text = await res.text();
-    parseCSV(text);
-    populateFilters();
-    updateDashboard();
-  } catch (err) {
-    console.error('Error cargando CSV:', err);
-  }
+  const res = await fetch('data/ventas.csv');
+  const text = await res.text();
+  parseCSV(text);
+  populateFilters();
+  updateDashboard();
 }
 
-/* ---------- Parse CSV ---------- */
 function parseCSV(csvText) {
-  const lines = csvText.trim().split('\n').filter(Boolean);
-  const headers = lines[0].split(',').map(h => h.trim());
-  const possibleBranches = ['branch','sucursal','store','store_name','branch_name'];
-  branchFieldName = headers.find(h => possibleBranches.includes(h.toLowerCase())) || null;
-
+  const lines = csvText.trim().split('\n');
+  const headers = lines[0].split(',');
   salesData = lines.slice(1).map(line => {
     const cols = line.split(',');
-    const obj = {};
-    headers.forEach((h, i) => {
-      const key = h.trim();
-      const raw = cols[i] !== undefined ? cols[i].trim() : '';
-      if (['units','price','revenue'].includes(key)) obj[key] = parseFloat(raw)||0;
-      else obj[key] = raw;
+    let obj = {};
+    headers.forEach((h,i)=>{
+      if(['units','price','revenue'].includes(h)){
+        obj[h] = parseFloat(cols[i]);
+      } else {
+        obj[h] = cols[i];
+      }
     });
     return obj;
   });
 }
 
-/* ---------- Populate filters ---------- */
 function populateFilters() {
-  const productSet = Array.from(new Set(salesData.map(d=>d.product_name).filter(Boolean))).sort();
-  const channelSet = Array.from(new Set(salesData.map(d=>d.channel).filter(Boolean))).sort();
-  const branchSet = branchFieldName ? Array.from(new Set(salesData.map(d=>d[branchFieldName]).filter(Boolean))).sort() : [];
+  const productSet = new Set(salesData.map(d=>d.product_name));
+  const channelSet = new Set(salesData.map(d=>d.channel));
+  const branchSet = new Set(salesData.map(d=>d.branch));
 
-  function renderPanel(panelEl, items, key){
-    panelEl.innerHTML = '';
-    const allRow = document.createElement('div');
-    allRow.className = 'dd-checkbox';
-    allRow.innerHTML = `<input type="checkbox" data-val="all" data-key="${key}" id="${key}_all"><label for="${key}_all" class="text-sm">Todos</label>`;
-    panelEl.appendChild(allRow);
+  const productSelect = document.getElementById('productFilter');
+  const channelSelect = document.getElementById('channelFilter');
+  const branchSelect = document.getElementById('branchFilter');
 
-    items.forEach(it => {
-      const id = `${key}_${slug(it)}`;
-      const row = document.createElement('div');
-      row.className = 'dd-checkbox';
-      row.innerHTML = `<input type="checkbox" data-val="${escapeHtml(it)}" data-key="${key}" id="${id}"><label for="${id}" class="text-sm">${escapeHtml(it)}</label>`;
-      panelEl.appendChild(row);
-    });
-
-    panelEl.querySelectorAll('input[type=checkbox]').forEach(cb => cb.addEventListener('change', onCheckboxChange));
-  }
-
-  renderPanel(document.getElementById('productPanel'), productSet, 'product');
-  renderPanel(document.getElementById('channelPanel'), channelSet, 'channel');
-  renderPanel(document.getElementById('branchPanel'), branchSet, 'branch');
-
-  setupDropdowns();
-  setupMonthControls();
-  setupToggleCollapseReset();
-  document.getElementById('metricSelector').addEventListener('change', updateDashboard);
-}
-
-/* ---------- Dropdowns ---------- */
-function setupDropdowns() {
-  document.querySelectorAll('.dd-btn').forEach(btn=>{
-    const panel = btn.nextElementSibling;
-    btn.addEventListener('click', e=>{
-      e.stopPropagation();
-      const isHidden = panel.classList.contains('hidden');
-      document.querySelectorAll('.dd-panel').forEach(p=>{ if(p!==panel) p.classList.add('hidden'); });
-      panel.classList.toggle('hidden', !isHidden);
-      btn.setAttribute('aria-expanded', !isHidden);
+  [productSet, channelSet, branchSet].forEach((set, i) => {
+    const select = [productSelect, channelSelect, branchSelect][i];
+    const optAll = document.createElement('option');
+    optAll.value = 'all';
+    optAll.text = 'Todos';
+    select.add(optAll);
+    set.forEach(v=>{
+      const opt = document.createElement('option');
+      opt.value = v;
+      opt.text = v;
+      select.add(opt);
     });
   });
 
-  document.addEventListener('click', e=>{
-    if(!e.target.closest('.dd-panel') && !e.target.closest('.dd-btn')){
-      document.querySelectorAll('.dd-panel').forEach(p=>p.classList.add('hidden'));
-      document.querySelectorAll('.dd-btn').forEach(b=>b.setAttribute('aria-expanded','false'));
+  productSelect.addEventListener('change', updateDashboard);
+  channelSelect.addEventListener('change', updateDashboard);
+  branchSelect.addEventListener('change', updateDashboard);
+
+  const monthsInput = document.getElementById('monthsFilter');
+  document.getElementById('increaseMonths').addEventListener('click', ()=> {
+    monthsInput.value = parseInt(monthsInput.value)+1;
+    updateDashboard();
+  });
+  document.getElementById('decreaseMonths').addEventListener('click', ()=> {
+    if(parseInt(monthsInput.value)>1){
+      monthsInput.value = parseInt(monthsInput.value)-1;
+      updateDashboard();
     }
   });
+  monthsInput.addEventListener('change', updateDashboard);
+
+  const toggleNumbers = document.getElementById('toggleNumbers');
+  toggleNumbers.addEventListener('change', () => {
+    showCompact = toggleNumbers.checked;
+    document.getElementById('toggleLabel').textContent =
+      showCompact ? "Vista compacta" : "Vista exacta";
+    updateCards(); // solo tarjetas
+  });
+
+  document.getElementById('resetFilters').addEventListener('click', ()=> {
+    productSelect.value = 'all';
+    channelSelect.value = 'all';
+    branchSelect.value = 'all';
+    monthsInput.value = 12;
+    toggleNumbers.checked = true;
+    showCompact = true;
+    document.getElementById('toggleLabel').textContent = "Vista compacta";
+    updateDashboard();
+  });
+
+  document.getElementById('toggleFilters').addEventListener('click', ()=> {
+    const content = document.getElementById('filtersContent');
+    const btn = document.getElementById('toggleFilters');
+    if(content.style.display === 'none'){
+      content.style.display = 'grid';
+      btn.textContent = "⯈";
+    } else {
+      content.style.display = 'none';
+      btn.textContent = "⯇";
+    }
+  });
+
+  document.getElementById('metricSelector').addEventListener('change',(e)=>{
+    currentMetric = e.target.value;
+    updateDashboard();
+  });
 }
 
-/* ---------- Checkbox ---------- */
-function onCheckboxChange(e){
-  const cb = e.target, key = cb.dataset.key, val = cb.dataset.val;
-  const panel = document.getElementById(key+'Panel');
-  if(!panel) return;
+function formatCompact(num) {
+  return Intl.NumberFormat("es-AR", {notation:"compact", maximumFractionDigits:1}).format(num);
+}
+function formatExact(num) {
+  return num.toLocaleString("es-AR");
+}
 
-  if(val==='all' && cb.checked){
-    panel.querySelectorAll('input[type=checkbox]').forEach(i=>{if(i.dataset.val!=='all') i.checked=false;});
-    selection[key]='all';
-  } else if(val==='all' && !cb.checked){
-    selection[key]='all'; cb.checked=true;
+function setValue(id, value, money=false, forceDecimal=false) {
+  const el = document.getElementById(id);
+  if(forceDecimal){
+    el.textContent = (money?"$":"")+value.toFixed(1);
   } else {
-    panel.querySelector('input[data-val="all"]').checked=false;
-    const chosen = Array.from(panel.querySelectorAll('input[type=checkbox]')).filter(i=>i.checked && i.dataset.val!=='all').map(i=>i.dataset.val);
-    selection[key] = chosen.length ? chosen : 'all';
+    el.textContent = showCompact
+      ? (money?"$":"")+formatCompact(value)
+      : (money?"$":"")+formatExact(value);
   }
-  updateBtnLabel(key);
-  updateDashboard();
 }
 
-function updateBtnLabel(key){
-  const label = document.getElementById(key+'BtnLabel');
-  const sel = selection[key];
-  if(!label) return;
-  label.textContent = (sel==='all') ? 'Todos' : Array.isArray(sel) ? (sel.length===1 ? sel[0] : `${sel.length} seleccionados`) : 'Todos';
+function setDelta(id, current, previous) {
+  const el = document.getElementById(id);
+  if(previous === 0){
+    el.textContent = '';
+    return;
+  }
+  const delta = ((current - previous) / previous) * 100;
+  const triangle = delta > 0 ? '▲' : delta < 0 ? '▼' : '';
+  const color = delta > 0 ? 'text-green-500' : delta < 0 ? 'text-red-500' : 'text-gray-500';
+  el.className = `text-lg mt-1 ${color}`;
+  el.textContent = `${triangle} ${Math.abs(delta).toFixed(1)}%`;
 }
 
-/* ---------- Dashboard ---------- */
-function updateDashboard() {
-  updateCards();
-  updateLastMonthCards();
-}
+function updateCards() {
+  const productFilter = getSelectedValues('productFilter');
+  const channelFilter = getSelectedValues('channelFilter');
+  const branchFilter = getSelectedValues('branchFilter');
+  const months = parseInt(document.getElementById('monthsFilter').value) || 12;
 
-function updateCards(){
-  const sel = {...selection};
-  const months = parseInt(document.getElementById('monthsFilter').value)||12;
-  let filtered = salesData.slice();
-  if(sel.product!=='all') filtered=filtered.filter(d=>sel.product.includes(d.product_name));
-  if(sel.channel!=='all') filtered=filtered.filter(d=>sel.channel.includes(d.channel));
-  if(branchFieldName && sel.branch!=='all') filtered=filtered.filter(d=>sel.branch.includes(d[branchFieldName]));
+  let filtered = [...salesData];
+  if(!productFilter.includes('all')) filtered = filtered.filter(d=>productFilter.includes(d.product_name));
+  if(!channelFilter.includes('all')) filtered = filtered.filter(d=>channelFilter.includes(d.channel));
+  if(!branchFilter.includes('all')) filtered = filtered.filter(d=>branchFilter.includes(d.branch));
 
-  const dateKeys = Array.from(new Set(filtered.map(d=>(d.date||'').slice(0,7)))).sort();
-  const lastKeys = dateKeys.slice(-months);
-  filtered = filtered.filter(d=>lastKeys.includes((d.date||'').slice(0,7)));
+  const dates = [...new Set(filtered.map(d=>d.date))].sort();
+  const lastDates = dates.slice(-months);
+  filtered = filtered.filter(d=>lastDates.includes(d.date));
 
-  const totalRevenue = filtered.reduce((s,d)=>s+(d.revenue||0),0);
-  const totalUnits = filtered.reduce((s,d)=>s+(d.units||0),0);
+  const totalRevenue = filtered.reduce((sum,d)=>sum+d.revenue,0);
+  const totalUnits = filtered.reduce((sum,d)=>sum+d.units,0);
   const avgPrice = totalUnits ? totalRevenue/totalUnits : 0;
 
-  setValue('salesCard', totalRevenue,true);
-  setValue('customersCard', totalUnits,false);
-  setValue('ordersCard', avgPrice,true,{forceExact:true,decimals:1});
+  setValue('salesCard', totalRevenue, true);
+  setValue('customersCard', totalUnits);
+  setValue('ordersCard', avgPrice, true, true); // siempre 1 decimal
 
+  const monthsSet = [...new Set(filtered.map(d=>d.date))].sort();
+  const lastMonth = monthsSet[monthsSet.length-1];
+  const prevMonth = monthsSet[monthsSet.length-2];
+
+  const lastData = filtered.filter(d=>d.date===lastMonth);
+  const prevData = filtered.filter(d=>d.date===prevMonth);
+
+  const lastRevenue = lastData.reduce((sum,d)=>sum+d.revenue,0);
+  const lastUnits = lastData.reduce((sum,d)=>sum+d.units,0);
+  const lastAvgPrice = lastUnits ? lastRevenue/lastUnits : 0;
+
+  const prevRevenue = prevData.reduce((sum,d)=>sum+d.revenue,0);
+  const prevUnits = prevData.reduce((sum,d)=>sum+d.units,0);
+  const prevAvgPrice = prevUnits ? prevRevenue/prevUnits : 0;
+
+  setValue('lastMonthRevenue', lastRevenue, true);
+  setValue('lastMonthUnits', lastUnits);
+  setValue('lastMonthAvgPrice', lastAvgPrice, true, true);
+
+  setDelta('lastMonthRevenueDelta', lastRevenue, prevRevenue);
+  setDelta('lastMonthUnitsDelta', lastUnits, prevUnits);
+  setDelta('lastMonthAvgPriceDelta', lastAvgPrice, prevAvgPrice);
+}
+
+function updateChart(filteredData) {
+  const grouped = {};
+  filteredData.forEach(d => {
+    if(!grouped[d.date]) grouped[d.date]=0;
+    grouped[d.date]+= d[currentMetric];
+  });
+
+  const labels = Object.keys(grouped).sort().map(d=>d.slice(0,7));
+  const values = labels.map((l,i)=>Object.values(grouped)[i]);
+
+  if(chart) chart.destroy();
+  const ctx = document.getElementById('salesChart').getContext('2d');
+  chart = new Chart(ctx, {
+    type: 'line',
+    data:{
+      labels: labels,
+      datasets:[{
+        label:'',
+        data: values,
+        borderColor:'rgba(59,130,246,1)',
+        backgroundColor:'rgba(59,130,246,0.2)',
+        fill:true,
+        tension:0.3
+      }]
+    },
+    options:{
+      responsive:true,
+      plugins:{legend:{display:false}},
+      scales:{x:{display:true},y:{display:true}}
+    }
+  });
+
+  const months = parseInt(document.getElementById('monthsFilter').value) || 12;
+  const dates = [...new Set(filteredData.map(d=>d.date))].sort();
+  const lastDates = dates.slice(-months);
+  const firstMonth = lastDates[0]?.slice(0,7) || '';
+  const lastMonth = lastDates[lastDates.length-1]?.slice(0,7) || '';
+  document.getElementById('chartTitle').textContent =
+    `Evolución temporal de ${currentMetric==="revenue"?"Revenue":"Units"} entre ${firstMonth} y ${lastMonth}`;
+}
+
+function updateDashboard() {
+  const productFilter = getSelectedValues('productFilter');
+  const channelFilter = getSelectedValues('channelFilter');
+  const branchFilter = getSelectedValues('branchFilter');
+  const months = parseInt(document.getElementById('monthsFilter').value) || 12;
+
+  let filtered = [...salesData];
+  if(!productFilter.includes('all')) filtered = filtered.filter(d=>productFilter.includes(d.product_name));
+  if(!channelFilter.includes('all')) filtered = filtered.filter(d=>channelFilter.includes(d.channel));
+  if(!branchFilter.includes('all')) filtered = filtered.filter(d=>branchFilter.includes(d.branch));
+
+  const dates = [...new Set(filtered.map(d=>d.date))].sort();
+  const lastDates = dates.slice(-months);
+  filtered = filtered.filter(d=>lastDates.includes(d.date));
+
+  updateCards();
   updateChart(filtered);
 }
 
-/* ---------- Último mes y delta ---------- */
-function updateLastMonthCards() {
-  const sel = {...selection};
-  let filtered = salesData.slice();
-  if(sel.product!=='all') filtered = filtered.filter(d=>sel.product.includes(d.product_name));
-  if(sel.channel!=='all') filtered = filtered.filter(d=>sel.channel.includes(d.channel));
-  if(branchFieldName && sel.branch!=='all') filtered = filtered.filter(d=>sel.branch.includes(d[branchFieldName]));
-
-  const monthsSorted = Array.from(new Set(filtered.map(d=>(d.date||'').slice(0,7)))).sort();
-  if(monthsSorted.length===0) return;
-
-  const lastMonth = monthsSorted[monthsSorted.length-1];
-  const prevMonth = monthsSorted.length>1 ? monthsSorted[monthsSorted.length-2] : null;
-
-  const lastData = filtered.filter(d=>(d.date||'').slice(0,7)===lastMonth);
-  const prevData = prevMonth ? filtered.filter(d=>(d.date||'').slice(0,7)===prevMonth) : [];
-
-  const revLast = lastData.reduce((s,d)=>s+(d.revenue||0),0);
-  const unitsLast = lastData.reduce((s,d)=>s+(d.units||0),0);
-  const priceLast = unitsLast ? revLast/unitsLast : 0;
-
-  const revPrev = prevData.reduce((s,d)=>s+(d.revenue||0),0);
-  const unitsPrev = prevData.reduce((s,d)=>s+(d.units||0),0);
-  const pricePrev = unitsPrev ? revPrev/unitsPrev : 0;
-
-  setValue('lastMonthRevenue', revLast,true);
-  setValue('lastMonthUnits', unitsLast,false);
-  setValue('lastMonthAvgPrice', priceLast,true,{forceExact:true,decimals:1});
-
-  setDelta('lastMonthRevenueDelta', revLast, revPrev);
-  setDelta('lastMonthUnitsDelta', unitsLast, unitsPrev);
-  setDelta('lastMonthAvgPriceDelta', priceLast, pricePrev);
+function getSelectedValues(selectId){
+  const sel = document.getElementById(selectId);
+  return Array.from(sel.selectedOptions).map(o=>o.value);
 }
-
-function setDelta(elId, current, previous){
-  const el=document.getElementById(elId);
-  if(!el) return;
-  if(previous===0||previous===null){ el.textContent=''; return; }
-  const diff = current - previous;
-  const pct = (diff/previous)*100;
-  el.textContent = `${diff>=0?'+':''}${diff.toLocaleString('es-AR')} (${pct.toFixed(1)}%)`;
-  el.style.color = diff>=0 ? 'green' : 'red';
-}
-
-/* ---------- Chart ---------- */
-function updateChart(filteredData){
-  const metric=document.getElementById('metricSelector').value||'revenue';
-  const grouped={};
-  filteredData.forEach(d=>{
-    const key=(d.date||'').slice(0,7); if(!key)return;
-    if(!grouped[key]) grouped[key]=0;
-    grouped[key]+=metric==='revenue'? (d.revenue||0):(d.units||0);
-  });
-  const labels=Object.keys(grouped).sort();
-  const values=labels.map(k=>grouped[k]);
-
-  if(chart) chart.destroy();
-  const ctx=document.getElementById('salesChart').getContext('2d');
-  const gradient = ctx.createLinearGradient(0,0,0,ctx.canvas.height);
-  gradient.addColorStop(0,'rgba(59,130,246,0.3)');
-  gradient.addColorStop(1,'rgba(59,130,246,0.05)');
-
-  chart=new Chart(ctx,{
-    type:'line',
-    data:{ labels, datasets:[{ label:'', data:values, borderColor:'rgba(59,130,246,1)', backgroundColor:gradient, fill:true, tension:0.3, pointRadius:3 }] },
-    options:{ responsive:true, plugins:{ legend:{ display:false } }, scales:{ x:{ display:true }, y:{ display:true } } }
-  });
-}
-
-/* ---------- Util ---------- */
-function setValue(id,value,money=false,options={forceExact:false,decimals:0}){
-  const el=document.getElementById(id); if(!el)return;
-  if(options.forceExact){ el.textContent=(money?'$':'')+value.toFixed(options.decimals); return; }
-  el.textContent=(money?'$':'')+Math.round(value).toLocaleString('es-AR');
-}
-
-/* ---------- Mes + / - y Toggle/Collapse/Reset ---------- */
-function setupMonthControls() {
-  const monthsEl = document.getElementById('monthsFilter');
-  document.getElementById('increaseMonths').addEventListener('click', ()=>{
-    monthsEl.value=parseInt(monthsEl.value||12)+1; 
-    updateDashboard();
-  });
-  document.getElementById('decreaseMonths').addEventListener('click', ()=>{
-    monthsEl.value=Math.max(1,parseInt(monthsEl.value||12)-1); 
-    updateDashboard();
-  });
-  monthsEl.addEventListener('change', ()=>updateDashboard());
-}
-
-function setupToggleCollapseReset(){
-  const toggle = document.getElementById('toggleSwitch');
-  const collapseBtn = document.getElementById('collapseBtn');
-  const resetBtn = document.getElementById('resetFilters');
-  const sidebar = document.getElementById('sidebar');
-  const collapseIcon = document.getElementById('collapseIcon');
-
-  toggle.addEventListener('click', ()=>{
-    showCompact=!showCompact;
-    toggle.classList.toggle('on',showCompact);
-    toggle.classList.toggle('off',!showCompact);
-    toggle.setAttribute('aria-pressed',String(showCompact));
-    updateCards();
-  });
-
-  collapseBtn.addEventListener('click', ()=>{
-    sidebar.classList.toggle('collapsed');
-    document.querySelectorAll('.hide-when-collapsed').forEach(el=>el.style.display=sidebar.classList.contains('collapsed')?'none':'block');
-    collapseIcon.innerHTML = sidebar.classList.contains('collapsed')
-      ? `<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>`
-      : `<path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>`;
-  });
-
-  resetBtn.addEventListener('click', ()=>{
-    document.getElementById('monthsFilter').value=12;
-    ['product','channel','branch'].forEach(k=>{
-      const panel=document.getElementById(k+'Panel');
-      panel.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=(cb.dataset.val==='all'));
-      selection[k]='all';
-      updateBtnLabel(k);
-    });
-    showCompact=true; toggle.classList.add('on'); toggle.classList.remove('off');
-    updateDashboard();
-  });
-}
-
-/* ---------- Helpers ---------- */
-function slug(text){ return text.toLowerCase().replace(/\s+/g,'_').replace(/[^\w-]/g,''); }
-function escapeHtml(text){ return text.replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
 
 loadCSV();
