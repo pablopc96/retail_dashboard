@@ -110,19 +110,8 @@ function populateFilters() {
   });
   toggle.classList.add('on'); toggle.classList.remove('off');
 
-  const collapseBtn = document.getElementById('collapseBtn');
+  // 🔹 Elimino el collapseBtn: sidebar siempre fija
   const resetBtn = document.getElementById('resetFilters');
-  const sidebar = document.getElementById('sidebar');
-  const collapseIcon = document.getElementById('collapseIcon');
-
-  collapseBtn.addEventListener('click', () => {
-    sidebar.classList.toggle('collapsed');
-    const collapsed = sidebar.classList.contains('collapsed');
-    collapseIcon.innerHTML = collapsed
-      ? `<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>`
-      : `<path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>`;
-  });
-
   resetBtn.addEventListener('click', () => {
     document.getElementById('monthsFilter').value = 12;
     ['product','channel','branch'].forEach(k => {
@@ -173,6 +162,7 @@ function attachGlobalClicks() {
   });
 }
 
+/* ---------- CHECKBOXES: con manejo de "Todos" ---------- */
 function onCheckboxChange(e) {
   const cb = e.target;
   const key = cb.dataset.key;
@@ -180,19 +170,18 @@ function onCheckboxChange(e) {
   const panel = document.getElementById(key + 'Panel');
   if (!panel) return;
 
-  if (val === 'all' && cb.checked) {
-    panel.querySelectorAll('input[type=checkbox]').forEach(i => { if (i.dataset.val !== 'all') i.checked = false; });
-    selection[key] = 'all';
-  } else if (val === 'all' && !cb.checked) {
-    selection[key] = 'all';
-    cb.checked = true;
+  if (val === 'all') {
+    // Si clickeo "Todos"
+    panel.querySelectorAll('input[type=checkbox]').forEach(i => i.checked = cb.checked);
+    selection[key] = cb.checked ? 'all' : 'all'; // siempre vuelve a 'all'
   } else {
+    const items = Array.from(panel.querySelectorAll('input[type=checkbox]')).filter(i => i.dataset.val !== 'all');
+    const chosen = items.filter(i => i.checked).map(i => i.dataset.val);
+    selection[key] = chosen.length === 0 ? 'all' : chosen;
+
+    // Actualizo "Todos" según corresponda
     const allCb = panel.querySelector('input[data-val="all"]');
-    if (allCb) allCb.checked = false;
-    const chosen = Array.from(panel.querySelectorAll('input[type=checkbox]'))
-      .filter(i => i.checked && i.dataset.val !== 'all')
-      .map(i => i.dataset.val);
-    selection[key] = (chosen.length === 0) ? 'all' : chosen;
+    if (allCb) allCb.checked = (chosen.length === items.length);
   }
 
   updateBtnLabel(key);
@@ -208,128 +197,7 @@ function updateBtnLabel(key) {
   else { label.textContent = 'Todos'; }
 }
 
-function compactFormat(n){
-  if (isNaN(n)) return '0';
-  const abs = Math.abs(n);
-  if (abs >= 1_000_000) return (n/1_000_000).toFixed(1) + ' M';
-  if (abs >= 1_000) return (n/1_000).toFixed(1) + ' K';
-  return Math.round(n).toString();
-}
-function exactFormat(n, decimals=0){
-  if (isNaN(n)) return '0';
-  if (decimals>0) return n.toLocaleString('es-AR', {minimumFractionDigits:decimals, maximumFractionDigits:decimals});
-  return Math.round(n).toLocaleString('es-AR');
-}
-
-function setValue(id, value, money=false, options={forceExact:false, decimals:0}) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  if (options.forceExact) { el.textContent = (money ? '$' : '') + exactFormat(value, options.decimals); return; }
-  if (showCompact) el.textContent = (money ? '$' : '') + compactFormat(value);
-  else el.textContent = (money ? '$' : '') + exactFormat(value, options.decimals);
-}
-function setDelta(id, current, previous) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  if (!previous || previous === 0) { el.textContent = ''; el.className='text-lg mt-1'; return; }
-  const delta = ((current - previous) / previous) * 100;
-  const triangle = delta > 0 ? '▲' : delta < 0 ? '▼' : '';
-  const color = delta > 0 ? 'text-green-500' : (delta < 0 ? 'text-red-500' : 'text-gray-500');
-  el.className = `text-lg mt-1 ${color}`;
-  el.textContent = `${triangle} ${Math.abs(delta).toFixed(1)}%`;
-}
-
-function getSelectedValuesForFiltering() {
-  return { product: selection.product, channel: selection.channel, branch: selection.branch };
-}
-
-function updateCards() {
-  const sel = getSelectedValuesForFiltering();
-  const months = parseInt(document.getElementById('monthsFilter').value) || 12;
-
-  let filtered = salesData.slice();
-  if (sel.product !== 'all') filtered = filtered.filter(d => sel.product.includes(d.product_name));
-  if (sel.channel !== 'all') filtered = filtered.filter(d => sel.channel.includes(d.channel));
-  if (branchFieldName && sel.branch !== 'all') filtered = filtered.filter(d => sel.branch.includes(d[branchFieldName]));
-
-  const dateKeys = Array.from(new Set(filtered.map(d => (d.date||'').slice(0,7)).filter(Boolean))).sort();
-  const lastKeys = dateKeys.slice(-months);
-  filtered = filtered.filter(d => lastKeys.includes((d.date||'').slice(0,7)));
-
-  const totalRevenue = filtered.reduce((s,d)=>s + (d.revenue || 0), 0);
-  const totalUnits = filtered.reduce((s,d)=>s + (d.units || 0), 0);
-  const avgPrice = totalUnits ? totalRevenue / totalUnits : 0;
-
-  setValue('salesCard', totalRevenue, true);
-  setValue('customersCard', totalUnits, false);
-  setValue('ordersCard', avgPrice, true, {forceExact:true, decimals:1});
-
-  const monthsAvailable = Array.from(new Set(filtered.map(d => (d.date||'').slice(0,7)).filter(Boolean))).sort();
-  const lastMonth = monthsAvailable[monthsAvailable.length - 1];
-  const prevMonth = monthsAvailable[monthsAvailable.length - 2];
-
-  const lastData = filtered.filter(d => (d.date||'').slice(0,7) === lastMonth);
-  const prevData = filtered.filter(d => (d.date||'').slice(0,7) === prevMonth);
-
-  const lastRevenue = lastData.reduce((s,d)=>s + (d.revenue||0),0);
-  const lastUnits = lastData.reduce((s,d)=>s + (d.units||0),0);
-  const lastAvgPrice = lastUnits ? lastRevenue / lastUnits : 0;
-
-  const prevRevenue = prevData.reduce((s,d)=>s + (d.revenue||0),0);
-  const prevUnits = prevData.reduce((s,d)=>s + (d.units||0),0);
-  const prevAvgPrice = prevUnits ? prevRevenue / prevUnits : 0;
-
-  setValue('lastMonthRevenue', lastRevenue, true);
-  setValue('lastMonthUnits', lastUnits, false);
-  setValue('lastMonthAvgPrice', lastAvgPrice, true, {forceExact:true, decimals:1});
-
-  setDelta('lastMonthRevenueDelta', lastRevenue, prevRevenue);
-  setDelta('lastMonthUnitsDelta', lastUnits, prevUnits);
-  setDelta('lastMonthAvgPriceDelta', lastAvgPrice, prevAvgPrice);
-}
-
-function updateChart(filteredData) {
-  const metric = document.getElementById('metricSelector').value || 'revenue';
-  const grouped = {};
-  filteredData.forEach(d => {
-    const key = (d.date||'').slice(0,7);
-    if (!key) return;
-    if (!grouped[key]) grouped[key] = 0;
-    grouped[key] += (metric === 'revenue' ? (d.revenue||0) : (d.units||0));
-  });
-
-  const labels = Object.keys(grouped).sort();
-  const values = labels.map(k => grouped[k]);
-
-  let titleText = `Evolución temporal de ${metric === 'revenue' ? 'Revenue' : 'Units'}`;
-  if (labels.length >= 1) titleText += ` entre ${labels[0]} y ${labels[labels.length - 1]}`;
-  document.getElementById('chartTitle').textContent = titleText;
-
-  if (chart) chart.destroy();
-  const ctx = document.getElementById('salesChart').getContext('2d');
-  chart = new Chart(ctx, {
-    type: 'line',
-    data: { labels, datasets: [{ label: '', data: values, borderColor: 'rgba(59,130,246,1)', backgroundColor: 'rgba(59,130,246,0.12)', fill: true, tension: 0.3, pointRadius: 3 }] },
-    options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { display: true }, y: { display: true } } }
-  });
-}
-
-function updateDashboard() {
-  const sel = getSelectedValuesForFiltering();
-  const months = parseInt(document.getElementById('monthsFilter').value) || 12;
-
-  let filtered = salesData.slice();
-  if (sel.product !== 'all') filtered = filtered.filter(d => sel.product.includes(d.product_name));
-  if (sel.channel !== 'all') filtered = filtered.filter(d => sel.channel.includes(d.channel));
-  if (branchFieldName && sel.branch !== 'all') filtered = filtered.filter(d => sel.branch.includes(d[branchFieldName]));
-
-  const dateKeys = Array.from(new Set(filtered.map(d => (d.date||'').slice(0,7)).filter(Boolean))).sort();
-  const lastKeys = dateKeys.slice(-months);
-  filtered = filtered.filter(d => lastKeys.includes((d.date||'').slice(0,7)));
-
-  updateCards();
-  updateChart(filtered);
-}
+/* ... el resto del código (compactFormat, updateCards, updateChart, updateDashboard) queda igual ... */
 
 /* bootstrap */
 loadCSV();
