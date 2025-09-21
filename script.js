@@ -1,4 +1,4 @@
-/* script.js - Dashboard completo y funcional */
+/* script.js - Dashboard funcional */
 let salesData = [];
 let chart = null;
 let showCompact = true;
@@ -12,14 +12,12 @@ async function loadCSV() {
     parseCSV(text);
     populateFilters();
     updateDashboard();
-    attachGlobalClicks();
-    setupMonthButtons();
   } catch (err) {
     console.error('Error cargando CSV:', err);
   }
 }
 
-/* ---------- parse CSV ---------- */
+/* ---------- Parse CSV ---------- */
 function parseCSV(csvText) {
   const lines = csvText.trim().split('\n').filter(Boolean);
   const headers = lines[0].split(',').map(h => h.trim());
@@ -32,20 +30,20 @@ function parseCSV(csvText) {
     headers.forEach((h, i) => {
       const key = h.trim();
       const raw = cols[i] !== undefined ? cols[i].trim() : '';
-      if (['units','price','revenue'].includes(key)) obj[key] = parseFloat(raw) || 0;
+      if (['units','price','revenue'].includes(key)) obj[key] = parseFloat(raw)||0;
       else obj[key] = raw;
     });
     return obj;
   });
 }
 
-/* ---------- populate filters ---------- */
+/* ---------- Populate filters ---------- */
 function populateFilters() {
-  const productSet = Array.from(new Set(salesData.map(d => d.product_name).filter(Boolean))).sort();
-  const channelSet = Array.from(new Set(salesData.map(d => d.channel).filter(Boolean))).sort();
-  const branchSet = branchFieldName ? Array.from(new Set(salesData.map(d => d[branchFieldName]).filter(Boolean))).sort() : [];
+  const productSet = Array.from(new Set(salesData.map(d=>d.product_name).filter(Boolean))).sort();
+  const channelSet = Array.from(new Set(salesData.map(d=>d.channel).filter(Boolean))).sort();
+  const branchSet = branchFieldName ? Array.from(new Set(salesData.map(d=>d[branchFieldName]).filter(Boolean))).sort() : [];
 
-  function renderPanel(panelEl, items, key) {
+  function renderPanel(panelEl, items, key){
     panelEl.innerHTML = '';
     const allRow = document.createElement('div');
     allRow.className = 'dd-checkbox';
@@ -67,64 +65,25 @@ function populateFilters() {
   renderPanel(document.getElementById('channelPanel'), channelSet, 'channel');
   renderPanel(document.getElementById('branchPanel'), branchSet, 'branch');
 
-  setupDropdowns(); // ✅ corregido para que todos los dropdowns funcionen
-
-  const monthsEl = document.getElementById('monthsFilter');
-  monthsEl.addEventListener('change', updateDashboard);
-
-  const toggle = document.getElementById('toggleSwitch');
-  toggle.addEventListener('click', () => {
-    showCompact = !showCompact;
-    toggle.classList.toggle('on', showCompact);
-    toggle.classList.toggle('off', !showCompact);
-    toggle.setAttribute('aria-pressed', String(showCompact));
-    updateCards();
-  });
-
-  const collapseBtn = document.getElementById('collapseBtn');
-  const resetBtn = document.getElementById('resetFilters');
-  const sidebar = document.getElementById('sidebar');
-  const collapseIcon = document.getElementById('collapseIcon');
-
-  collapseBtn.addEventListener('click', () => {
-    sidebar.classList.toggle('collapsed');
-    document.querySelectorAll('.hide-when-collapsed').forEach(el => el.style.display = sidebar.classList.contains('collapsed') ? 'none':'block');
-    collapseIcon.innerHTML = sidebar.classList.contains('collapsed')
-      ? `<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>`
-      : `<path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>`;
-  });
-
-  resetBtn.addEventListener('click', () => {
-    monthsEl.value = 12;
-    ['product','channel','branch'].forEach(k=>{
-      const panel = document.getElementById(k+'Panel');
-      panel.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked=(cb.dataset.val==='all'));
-      selection[k]='all';
-      updateBtnLabel(k);
-    });
-    showCompact = true;
-    toggle.classList.add('on'); toggle.classList.remove('off');
-    updateDashboard();
-  });
-
+  setupDropdowns();
+  setupMonthControls();
+  setupToggleCollapseReset();
   document.getElementById('metricSelector').addEventListener('change', updateDashboard);
 }
 
-/* ---------- Dropdowns fixes ---------- */
+/* ---------- Dropdowns ---------- */
 function setupDropdowns() {
   document.querySelectorAll('.dd-btn').forEach(btn=>{
     const panel = btn.nextElementSibling;
     btn.addEventListener('click', e=>{
       e.stopPropagation();
       const isHidden = panel.classList.contains('hidden');
-      document.querySelectorAll('.dd-panel').forEach(p=>{ if(p!==panel)p.classList.add('hidden'); });
+      document.querySelectorAll('.dd-panel').forEach(p=>{ if(p!==panel) p.classList.add('hidden'); });
       panel.classList.toggle('hidden', !isHidden);
       btn.setAttribute('aria-expanded', !isHidden);
     });
   });
-}
 
-function attachGlobalClicks(){
   document.addEventListener('click', e=>{
     if(!e.target.closest('.dd-panel') && !e.target.closest('.dd-btn')){
       document.querySelectorAll('.dd-panel').forEach(p=>p.classList.add('hidden'));
@@ -134,14 +93,14 @@ function attachGlobalClicks(){
 
 /* ---------- Checkbox ---------- */
 function onCheckboxChange(e){
-  const cb=e.target; const key=cb.dataset.key; const val=cb.dataset.val;
-  const panel=document.getElementById(key+'Panel');
-  if(!panel)return;
+  const cb = e.target, key = cb.dataset.key, val = cb.dataset.val;
+  const panel = document.getElementById(key+'Panel');
+  if(!panel) return;
 
-  if(val==='all'&&cb.checked){
-    panel.querySelectorAll('input[type=checkbox]').forEach(i=>{if(i.dataset.val!=='all')i.checked=false;});
+  if(val==='all' && cb.checked){
+    panel.querySelectorAll('input[type=checkbox]').forEach(i=>{if(i.dataset.val!=='all') i.checked=false;});
     selection[key]='all';
-  } else if(val==='all'&&!cb.checked){
+  } else if(val==='all' && !cb.checked){
     selection[key]='all'; cb.checked=true;
   } else {
     panel.querySelector('input[data-val="all"]').checked=false;
@@ -153,9 +112,10 @@ function onCheckboxChange(e){
 }
 
 function updateBtnLabel(key){
-  const label=document.getElementById(key+'BtnLabel'); if(!label)return;
-  const sel=selection[key];
-  label.textContent=(sel==='all')?'Todos':Array.isArray(sel)?(sel.length===1?sel[0]:`${sel.length} seleccionados`):'Todos';
+  const label = document.getElementById(key+'BtnLabel');
+  const sel = selection[key];
+  if(!label) return;
+  label.textContent = (sel==='all') ? 'Todos' : Array.isArray(sel) ? (sel.length===1 ? sel[0] : `${sel.length} seleccionados`) : 'Todos';
 }
 
 /* ---------- Dashboard ---------- */
@@ -165,20 +125,20 @@ function updateDashboard() {
 }
 
 function updateCards(){
-  const sel={...selection};
-  const months=parseInt(document.getElementById('monthsFilter').value)||12;
-  let filtered=salesData.slice();
+  const sel = {...selection};
+  const months = parseInt(document.getElementById('monthsFilter').value)||12;
+  let filtered = salesData.slice();
   if(sel.product!=='all') filtered=filtered.filter(d=>sel.product.includes(d.product_name));
   if(sel.channel!=='all') filtered=filtered.filter(d=>sel.channel.includes(d.channel));
   if(branchFieldName && sel.branch!=='all') filtered=filtered.filter(d=>sel.branch.includes(d[branchFieldName]));
 
-  const dateKeys=Array.from(new Set(filtered.map(d=>(d.date||'').slice(0,7)))).sort();
-  const lastKeys=dateKeys.slice(-months);
-  filtered=filtered.filter(d=>lastKeys.includes((d.date||'').slice(0,7)));
+  const dateKeys = Array.from(new Set(filtered.map(d=>(d.date||'').slice(0,7)))).sort();
+  const lastKeys = dateKeys.slice(-months);
+  filtered = filtered.filter(d=>lastKeys.includes((d.date||'').slice(0,7)));
 
-  const totalRevenue=filtered.reduce((s,d)=>s+(d.revenue||0),0);
-  const totalUnits=filtered.reduce((s,d)=>s+(d.units||0),0);
-  const avgPrice=totalUnits? totalRevenue/totalUnits : 0;
+  const totalRevenue = filtered.reduce((s,d)=>s+(d.revenue||0),0);
+  const totalUnits = filtered.reduce((s,d)=>s+(d.units||0),0);
+  const avgPrice = totalUnits ? totalRevenue/totalUnits : 0;
 
   setValue('salesCard', totalRevenue,true);
   setValue('customersCard', totalUnits,false);
@@ -189,13 +149,13 @@ function updateCards(){
 
 /* ---------- Último mes y delta ---------- */
 function updateLastMonthCards() {
-  const sel={...selection};
-  let filtered=salesData.slice();
-  if(sel.product!=='all') filtered=filtered.filter(d=>sel.product.includes(d.product_name));
-  if(sel.channel!=='all') filtered=filtered.filter(d=>sel.channel.includes(d.channel));
-  if(branchFieldName && sel.branch!=='all') filtered=filtered.filter(d=>sel.branch.includes(d[branchFieldName]));
+  const sel = {...selection};
+  let filtered = salesData.slice();
+  if(sel.product!=='all') filtered = filtered.filter(d=>sel.product.includes(d.product_name));
+  if(sel.channel!=='all') filtered = filtered.filter(d=>sel.channel.includes(d.channel));
+  if(branchFieldName && sel.branch!=='all') filtered = filtered.filter(d=>sel.branch.includes(d[branchFieldName]));
 
-  const monthsSorted=Array.from(new Set(filtered.map(d=>(d.date||'').slice(0,7)))).sort();
+  const monthsSorted = Array.from(new Set(filtered.map(d=>(d.date||'').slice(0,7)))).sort();
   if(monthsSorted.length===0) return;
 
   const lastMonth = monthsSorted[monthsSorted.length-1];
@@ -245,7 +205,6 @@ function updateChart(filteredData){
 
   if(chart) chart.destroy();
   const ctx=document.getElementById('salesChart').getContext('2d');
-
   const gradient = ctx.createLinearGradient(0,0,0,ctx.canvas.height);
   gradient.addColorStop(0,'rgba(59,130,246,0.3)');
   gradient.addColorStop(1,'rgba(59,130,246,0.05)');
@@ -264,11 +223,47 @@ function setValue(id,value,money=false,options={forceExact:false,decimals:0}){
   el.textContent=(money?'$':'')+Math.round(value).toLocaleString('es-AR');
 }
 
-/* ---------- Mes buttons + / - ---------- */
-function setupMonthButtons() {
+/* ---------- Mes + / - y Toggle/Collapse/Reset ---------- */
+function setupMonthControls() {
   const monthsEl = document.getElementById('monthsFilter');
-  document.getElementById('increaseMonths').addEventListener('click', () => { monthsEl.value = parseInt(monthsEl.value||12)+1; updateDashboard(); });
-  document.getElementById('decreaseMonths').addEventListener('click', () => { monthsEl.value = Math.max(1,parseInt(monthsEl.value||12)-1); updateDashboard(); });
+  document.getElementById('increaseMonths').addEventListener('click', ()=>{ monthsEl.value=parseInt(monthsEl.value||12)+1; updateDashboard(); });
+  document.getElementById('decreaseMonths').addEventListener('click', ()=>{ monthsEl.value=Math.max(1,parseInt(monthsEl.value||12)-1); updateDashboard(); });
+}
+
+function setupToggleCollapseReset(){
+  const toggle = document.getElementById('toggleSwitch');
+  const collapseBtn = document.getElementById('collapseBtn');
+  const resetBtn = document.getElementById('resetFilters');
+  const sidebar = document.getElementById('sidebar');
+  const collapseIcon = document.getElementById('collapseIcon');
+
+  toggle.addEventListener('click', ()=>{
+    showCompact=!showCompact;
+    toggle.classList.toggle('on',showCompact);
+    toggle.classList.toggle('off',!showCompact);
+    toggle.setAttribute('aria-pressed',String(showCompact));
+    updateCards();
+  });
+
+  collapseBtn.addEventListener('click', ()=>{
+    sidebar.classList.toggle('collapsed');
+    document.querySelectorAll('.hide-when-collapsed').forEach(el=>el.style.display=sidebar.classList.contains('collapsed')?'none':'block');
+    collapseIcon.innerHTML = sidebar.classList.contains('collapsed')
+      ? `<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>`
+      : `<path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>`;
+  });
+
+  resetBtn.addEventListener('click', ()=>{
+    document.getElementById('monthsFilter').value=12;
+    ['product','channel','branch'].forEach(k=>{
+      const panel=document.getElementById(k+'Panel');
+      panel.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=(cb.dataset.val==='all'));
+      selection[k]='all';
+      updateBtnLabel(k);
+    });
+    showCompact=true; toggle.classList.add('on'); toggle.classList.remove('off');
+    updateDashboard();
+  });
 }
 
 loadCSV();
