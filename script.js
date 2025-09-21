@@ -1,4 +1,4 @@
-/* script.js - Dashboard funcional con últimas tarjetas */
+/* script.js - Dashboard completo y funcional */
 let salesData = [];
 let chart = null;
 let showCompact = true;
@@ -67,9 +67,7 @@ function populateFilters() {
   renderPanel(document.getElementById('channelPanel'), channelSet, 'channel');
   renderPanel(document.getElementById('branchPanel'), branchSet, 'branch');
 
-  setupDropdown('productBtn','productPanel','productBtnLabel');
-  setupDropdown('channelBtn','channelPanel','channelBtnLabel');
-  setupDropdown('branchBtn','branchPanel','branchBtnLabel');
+  setupDropdowns(); // ✅ corregido para que todos los dropdowns funcionen
 
   const monthsEl = document.getElementById('monthsFilter');
   monthsEl.addEventListener('change', updateDashboard);
@@ -112,20 +110,17 @@ function populateFilters() {
   document.getElementById('metricSelector').addEventListener('change', updateDashboard);
 }
 
-/* ---------- helpers ---------- */
-function slug(s){ return String(s).toLowerCase().replace(/\s+/g,'_').replace(/[^\w\-]+/g,''); }
-function escapeHtml(s){ if(!s)return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-function setupDropdown(buttonId, panelId, labelId){
-  const btn=document.getElementById(buttonId);
-  const panel=document.getElementById(panelId);
-  if(!btn||!panel)return;
-  btn.addEventListener('click',(e)=>{
-    e.stopPropagation();
-    const isHidden = panel.classList.contains('hidden');
-    document.querySelectorAll('.dd-panel').forEach(p=>{if(p!==panel)p.classList.add('hidden');});
-    panel.classList.toggle('hidden', !isHidden);
-    btn.setAttribute('aria-expanded', !isHidden);
+/* ---------- Dropdowns fixes ---------- */
+function setupDropdowns() {
+  document.querySelectorAll('.dd-btn').forEach(btn=>{
+    const panel = btn.nextElementSibling;
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      const isHidden = panel.classList.contains('hidden');
+      document.querySelectorAll('.dd-panel').forEach(p=>{ if(p!==panel)p.classList.add('hidden'); });
+      panel.classList.toggle('hidden', !isHidden);
+      btn.setAttribute('aria-expanded', !isHidden);
+    });
   });
 }
 
@@ -137,6 +132,7 @@ function attachGlobalClicks(){
   });
 }
 
+/* ---------- Checkbox ---------- */
 function onCheckboxChange(e){
   const cb=e.target; const key=cb.dataset.key; const val=cb.dataset.val;
   const panel=document.getElementById(key+'Panel');
