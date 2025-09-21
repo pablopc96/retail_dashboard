@@ -1,4 +1,4 @@
-/* script.js - Dashboard funcional */
+/* script.js - Dashboard funcional y filtros corregidos */
 let salesData = [];
 let chart = null;
 let showCompact = true;
@@ -87,6 +87,7 @@ function setupDropdowns() {
   document.addEventListener('click', e=>{
     if(!e.target.closest('.dd-panel') && !e.target.closest('.dd-btn')){
       document.querySelectorAll('.dd-panel').forEach(p=>p.classList.add('hidden'));
+      document.querySelectorAll('.dd-btn').forEach(b=>b.setAttribute('aria-expanded','false'));
     }
   });
 }
@@ -226,8 +227,15 @@ function setValue(id,value,money=false,options={forceExact:false,decimals:0}){
 /* ---------- Mes + / - y Toggle/Collapse/Reset ---------- */
 function setupMonthControls() {
   const monthsEl = document.getElementById('monthsFilter');
-  document.getElementById('increaseMonths').addEventListener('click', ()=>{ monthsEl.value=parseInt(monthsEl.value||12)+1; updateDashboard(); });
-  document.getElementById('decreaseMonths').addEventListener('click', ()=>{ monthsEl.value=Math.max(1,parseInt(monthsEl.value||12)-1); updateDashboard(); });
+  document.getElementById('increaseMonths').addEventListener('click', ()=>{
+    monthsEl.value=parseInt(monthsEl.value||12)+1; 
+    updateDashboard();
+  });
+  document.getElementById('decreaseMonths').addEventListener('click', ()=>{
+    monthsEl.value=Math.max(1,parseInt(monthsEl.value||12)-1); 
+    updateDashboard();
+  });
+  monthsEl.addEventListener('change', ()=>updateDashboard());
 }
 
 function setupToggleCollapseReset(){
@@ -267,7 +275,7 @@ function setupToggleCollapseReset(){
 }
 
 /* ---------- Helpers ---------- */
-function slug(str){ return str.toLowerCase().replace(/\s+/g,'_'); }
-function escapeHtml(text){ const map={ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}; return text.replace(/[&<>"']/g,m=>map[m]); }
+function slug(text){ return text.toLowerCase().replace(/\s+/g,'_').replace(/[^\w-]/g,''); }
+function escapeHtml(text){ return text.replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
 
 loadCSV();
