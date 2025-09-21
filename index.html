@@ -1,62 +1,87 @@
-/* Toggle switch */
-.toggle {
-  width: 48px;
-  height: 26px;
-  border-radius: 9999px;
-  padding: 3px;
-  display: inline-flex;
-  align-items: center;
-  cursor: pointer;
-  transition: background-color .18s;
-}
-.toggle .knob {
-  width: 20px;
-  height: 20px;
-  border-radius: 9999px;
-  background: white;
-  box-shadow: 0 1px 3px rgba(0,0,0,.2);
-  transform: translateX(0);
-  transition: transform .18s;
-}
-.toggle.on { background-color: #2563eb; }
-.toggle.off { background-color: #9ca3af; }
-.toggle.on .knob { transform: translateX(22px); }
-.toggle.off .knob { transform: translateX(0); }
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard de Ventas</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="flex h-screen bg-gray-100">
 
-/* months input width igual al dropdown */
-#monthsFilter { width: 16rem; text-align: center; }
+  <!-- Sidebar fija con filtros -->
+  <aside id="sidebar" class="w-64 bg-gray-800 text-gray-100 p-4 flex flex-col">
+    <div class="flex items-start justify-between mb-4">
+      <h2 class="text-2xl font-bold">Filtros</h2>
+      <button id="resetFilters" class="text-sm" title="Restablecer filtros">Reset</button>
+    </div>
 
-/* Botones + / – */
-#increaseMonths, #decreaseMonths {
-  width: 2rem;
-  height: 2rem;
-  font-size: 1.2rem;
-  cursor: pointer;
-}
+    <!-- Filtro meses -->
+    <div class="mb-4">
+      <label class="block mb-1 text-gray-200">Filtrar últimos meses</label>
+      <div class="flex items-center gap-2 w-full">
+        <button id="decreaseMonths" class="px-2 py-1 bg-gray-700 rounded text-white hover:bg-gray-600">−</button>
+        <input id="monthsFilter" type="number" value="12" min="1"
+               class="flex-grow p-2 rounded bg-gray-700 text-white text-center focus:outline-none">
+        <button id="increaseMonths" class="px-2 py-1 bg-gray-700 rounded text-white hover:bg-gray-600">+</button>
+      </div>
+    </div>
 
-/* Dropdowns */
-.dd-btn {
-  background: #374151; color: #fff;
-  padding: 0.5rem 0.75rem; border-radius: 0.375rem;
-  width: 100%; text-align: left;
-  display: flex; justify-content: space-between; align-items: center;
-}
-.dd-panel {
-  position: absolute;
-  background: #374151;
-  border-radius: 0.5rem;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-  z-index: 50;
-  width: 16rem;
-  max-height: 240px;
-  overflow: auto;
-  padding: 0.5rem;
-}
+    <!-- Dropdowns -->
+    <div class="space-y-3">
 
-/* Checkbox items: quitar efecto hover */
-.dd-checkbox {
-  display:flex; align-items:center; gap:0.5rem; padding:0.4rem 0.25rem; border-radius:0.25rem;
-}
-.dd-checkbox:hover { background: transparent; } /* quitar hover */
+      <!-- Producto -->
+      <div class="relative">
+        <label class="block mb-1 text-gray-200">Producto</label>
+        <button id="productBtn" class="dd-btn" aria-haspopup="listbox" aria-expanded="false">
+          <span id="productBtnLabel" class="text-sm text-gray-200">Todos</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-300" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.293l3.71-4.06a.75.75 0 111.08 1.04l-4.25 4.66a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+          </svg>
+        </button>
+        <div id="productPanel" class="dd-panel hidden" role="listbox" aria-multiselectable="true"></div>
+      </div>
 
-#collapseBtn { display: none; } /* quitar opción colapsar */
+      <!-- Canal -->
+      <div class="relative">
+        <label class="block mb-1 text-gray-200">Canal</label>
+        <button id="channelBtn" class="dd-btn" aria-haspopup="listbox" aria-expanded="false">
+          <span id="channelBtnLabel" class="text-sm text-gray-200">Todos</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-300" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.293l3.71-4.06a.75.75 0 111.08 1.04l-4.25 4.66a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+          </svg>
+        </button>
+        <div id="channelPanel" class="dd-panel hidden" role="listbox" aria-multiselectable="true"></div>
+      </div>
+
+      <!-- Sucursal -->
+      <div class="relative">
+        <label class="block mb-1 text-gray-200">Sucursal</label>
+        <button id="branchBtn" class="dd-btn" aria-haspopup="listbox" aria-expanded="false">
+          <span id="branchBtnLabel" class="text-sm text-gray-200">Todos</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-300" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.293l3.71-4.06a.75.75 0 111.08 1.04l-4.25 4.66a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+          </svg>
+        </button>
+        <div id="branchPanel" class="dd-panel hidden" role="listbox" aria-multiselectable="true"></div>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- Contenido principal -->
+  <main class="flex-1 p-6 overflow-y-auto">
+    <h1 class="text-3xl font-bold mb-6">Dashboard de Ventas</h1>
+
+    <!-- Tarjetas -->
+    <div id="cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6"></div>
+
+    <!-- Gráfico -->
+    <div class="bg-white rounded-lg shadow p-4">
+      <canvas id="salesChart"></canvas>
+    </div>
+  </main>
+
+  <!-- Script -->
+  <script src="script.js"></script>
+</body>
+</html>
