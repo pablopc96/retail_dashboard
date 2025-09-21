@@ -1,17 +1,34 @@
-/* script.js - Dashboard funcional corregido */
+/* script.js - Dashboard funcional */
+
+// Arreglo global donde se almacena la data del CSV
 let salesData = [];
+
+// Variable para almacenar la instancia del chart
 let chart = null;
+
+// Flag para vista compacta/exacta
 let showCompact = true;
+
+// Nombre del campo de sucursal detectado en CSV
 let branchFieldName = null;
+
+// Objeto para almacenar la selección actual de filtros
 const selection = { product: 'all', channel: 'all', branch: 'all' };
 
-/* ---------- Cargar CSV ---------- */
+/* ---------- Carga CSV ---------- */
 async function loadCSV() {
   try {
+    // Fetch del CSV local
     const res = await fetch('data/ventas.csv');
     const text = await res.text();
+
+    // Parseo del CSV
     parseCSV(text);
+
+    // Poblado de filtros (dropdowns)
     populateFilters();
+
+    // Actualización inicial del dashboard
     updateDashboard();
   } catch (err) {
     console.error('Error cargando CSV:', err);
@@ -21,16 +38,22 @@ async function loadCSV() {
 /* ---------- Parse CSV ---------- */
 function parseCSV(csvText) {
   const lines = csvText.trim().split('\n').filter(Boolean);
+
+  // Primer fila como headers
   const headers = lines[0].split(',').map(h => h.trim());
+
+  // Posibles nombres de columna para sucursal
   const possibleBranches = ['branch','sucursal','store','store_name','branch_name'];
   branchFieldName = headers.find(h => possibleBranches.includes(h.toLowerCase())) || null;
 
+  // Transformar cada fila a objeto
   salesData = lines.slice(1).map(line => {
     const cols = line.split(',');
     const obj = {};
     headers.forEach((h, i) => {
       const key = h.trim();
       const raw = cols[i] !== undefined ? cols[i].trim() : '';
+      // Campos numéricos parseados a float
       if (['units','price','revenue'].includes(key)) obj[key] = parseFloat(raw)||0;
       else obj[key] = raw;
     });
@@ -40,57 +63,65 @@ function parseCSV(csvText) {
 
 /* ---------- Populate filters ---------- */
 function populateFilters() {
+  // Crear sets únicos para cada filtro
   const productSet = Array.from(new Set(salesData.map(d=>d.product_name).filter(Boolean))).sort();
   const channelSet = Array.from(new Set(salesData.map(d=>d.channel).filter(Boolean))).sort();
   const branchSet = branchFieldName ? Array.from(new Set(salesData.map(d=>d[branchFieldName]).filter(Boolean))).sort() : [];
 
+  // Función para renderizar los panels de cada filtro
   function renderPanel(panelEl, items, key){
     panelEl.innerHTML = '';
-    // Checkbox "Todos"
+
+    // Opción "Todos"
     const allRow = document.createElement('div');
     allRow.className = 'dd-checkbox';
-    allRow.innerHTML = `<input type="checkbox" data-val="all" data-key="${key}" id="${key}_all" checked>
-                        <label for="${key}_all" class="text-sm">Todos</label>`;
+    allRow.innerHTML = `<input type="checkbox" data-val="all" data-key="${key}" id="${key}_all"><label for="${key}_all" class="text-sm">Todos</label>`;
     panelEl.appendChild(allRow);
 
+    // Opciones individuales
     items.forEach(it => {
       const id = `${key}_${slug(it)}`;
       const row = document.createElement('div');
       row.className = 'dd-checkbox';
-      row.innerHTML = `<input type="checkbox" data-val="${escapeHtml(it)}" data-key="${key}" id="${id}">
-                       <label for="${id}" class="text-sm">${escapeHtml(it)}</label>`;
+      row.innerHTML = `<input type="checkbox" data-val="${escapeHtml(it)}" data-key="${key}" id="${id}"><label for="${id}" class="text-sm">${escapeHtml(it)}</label>`;
       panelEl.appendChild(row);
     });
 
+    // Listener de cambio en checkboxes
     panelEl.querySelectorAll('input[type=checkbox]').forEach(cb => cb.addEventListener('change', onCheckboxChange));
   }
 
+  // Renderizado de cada panel
   renderPanel(document.getElementById('productPanel'), productSet, 'product');
   renderPanel(document.getElementById('channelPanel'), channelSet, 'channel');
   renderPanel(document.getElementById('branchPanel'), branchSet, 'branch');
 
+  // Configuración de dropdowns, meses y toggle/reset
   setupDropdowns();
   setupMonthControls();
   setupToggleCollapseReset();
 
+  // Listener selector de métrica del chart
   document.getElementById('metricSelector').addEventListener('change', updateDashboard);
 }
 
 /* ---------- Dropdowns ---------- */
 function setupDropdowns() {
+  // Configurar comportamiento al click en botón de dropdown
   document.querySelectorAll('.dd-btn').forEach(btn=>{
     const panel = btn.nextElementSibling;
     btn.addEventListener('click', e=>{
       e.stopPropagation();
       const isHidden = panel.classList.contains('hidden');
-      document.querySelectorAll('.dd-panel').forEach(p=>{
-        if(p!==panel) p.classList.add('hidden');
-      });
+      // Cerrar otros panels abiertos
+      document.querySelectorAll('.dd-panel').forEach(p=>{ if(p!==panel) p.classList.add('hidden'); });
+      // Toggle del panel actual
       panel.classList.toggle('hidden', !isHidden);
       btn.setAttribute('aria-expanded', !isHidden);
     });
   });
 
+  // Cerrar panel si se hace click fuera
   document.addEventListener('click', e=>{
     if(!e.target.closest('.dd-panel') && !e.target.closest('.dd-btn')){
       document.querySelectorAll('.dd-panel').forEach(p=>p.classList.add('hidden'));
@@ -105,25 +136,23 @@ function onCheckboxChange(e){
   if(!panel) return;
 
   if(val==='all' && cb.checked){
-    panel.querySelectorAll('input[type=checkbox]').forEach(i=>{
-      if(i.dataset.val!=='all') i.checked=false;
-    });
+    // Selecciona "Todos", desmarca los demás
+    panel.querySelectorAll('input[type=checkbox]').forEach(i=>{if(i.dataset.val!=='all') i.checked=false;});
     selection[key]='all';
   } else if(val==='all' && !cb.checked){
-    cb.checked=true; // nunca desmarcar "Todos"
-    selection[key]='all';
+    // Evitar desmarcar "Todos"
+    selection[key]='all'; cb.checked=true;
   } else {
+    // Desmarcar "Todos" si se selecciona otro
     panel.querySelector('input[data-val="all"]').checked=false;
-    const chosen = Array.from(panel.querySelectorAll('input[type=checkbox]'))
-                        .filter(i=>i.checked && i.dataset.val!=='all')
-                        .map(i=>i.dataset.val);
+    const chosen = Array.from(panel.querySelectorAll('input[type=checkbox]')).filter(i=>i.checked && i.dataset.val!=='all').map(i=>i.dataset.val);
     selection[key] = chosen.length ? chosen : 'all';
-    if(selection[key]==='all') panel.querySelector('input[data-val="all"]').checked=true;
   }
   updateBtnLabel(key);
   updateDashboard();
 }
 
+// Actualiza texto del botón con selección
 function updateBtnLabel(key){
   const label = document.getElementById(key+'BtnLabel');
   const sel = selection[key];
@@ -137,19 +166,23 @@ function updateDashboard() {
   updateLastMonthCards();
 }
 
-/* ---------- Cards principales ---------- */
+/* ---------- Tarjetas principales ---------- */
 function updateCards(){
   const sel = {...selection};
   const months = parseInt(document.getElementById('monthsFilter').value)||12;
   let filtered = salesData.slice();
+
+  // Filtrado por producto, canal y sucursal
   if(sel.product!=='all') filtered=filtered.filter(d=>sel.product.includes(d.product_name));
   if(sel.channel!=='all') filtered=filtered.filter(d=>sel.channel.includes(d.channel));
   if(branchFieldName && sel.branch!=='all') filtered=filtered.filter(d=>sel.branch.includes(d[branchFieldName]));
 
+  // Filtrado por últimos N meses
   const dateKeys = Array.from(new Set(filtered.map(d=>(d.date||'').slice(0,7)))).sort();
   const lastKeys = dateKeys.slice(-months);
   filtered = filtered.filter(d=>lastKeys.includes((d.date||'').slice(0,7)));
 
+  // Cálculo totales
   const totalRevenue = filtered.reduce((s,d)=>s+(d.revenue||0),0);
   const totalUnits = filtered.reduce((s,d)=>s+(d.units||0),0);
   const avgPrice = totalUnits ? totalRevenue/totalUnits : 0;
@@ -158,6 +191,7 @@ function updateCards(){
   setValue('customersCard', totalUnits,false);
   setValue('ordersCard', avgPrice,true,{forceExact:true,decimals:1});
 
+  // Actualiza chart
   updateChart(filtered);
 }
 
@@ -195,6 +229,7 @@ function updateLastMonthCards() {
   setDelta('lastMonthAvgPriceDelta', priceLast, pricePrev);
 }
 
+// Calcula delta y porcentaje
 function setDelta(elId, current, previous){
   const el=document.getElementById(elId);
   if(!el) return;
@@ -225,70 +260,54 @@ function updateChart(filteredData){
 
   chart=new Chart(ctx,{
     type:'line',
-    data:{ labels, datasets:[{ label:'', data:values, borderColor:'rgba(59,130,246,1)', backgroundColor:gradient, fill:true, tension:0.3, pointRadius:3 }] },
-    options:{ responsive:true, plugins:{ legend:{ display:false } }, scales:{ x:{ display:true }, y:{ display:true } } }
+    data:{ labels, datasets:[{ label: metric==='revenue'?'Revenue':'Units', data: values, fill:true, backgroundColor:gradient, borderColor:'#3b82f6', tension:0.2 }] },
+    options:{ responsive:true, plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true } } }
   });
 }
 
-/* ---------- Util ---------- */
-function setValue(id,value,money=false,options={forceExact:false,decimals:0}){
-  const el=document.getElementById(id); if(!el)return;
-  if(options.forceExact){ el.textContent=(money?'$':'')+value.toFixed(options.decimals); return; }
-  el.textContent=(money?'$':'')+Math.round(value).toLocaleString('es-AR');
+/* ---------- Utils ---------- */
+function setValue(id,val,isCurrency=false,opts={}){
+  const el=document.getElementById(id); if(!el) return;
+  if(opts.forceExact) val=Number(val.toFixed(opts.decimals||0));
+  el.textContent=isCurrency? `$${val.toLocaleString('es-AR')}` : val.toLocaleString('es-AR');
 }
 
-/* ---------- Mes + / - y Toggle/Collapse/Reset ---------- */
-function setupMonthControls() {
-  const monthsEl = document.getElementById('monthsFilter');
-  document.getElementById('increaseMonths').addEventListener('click', ()=>{
-    monthsEl.value=parseInt(monthsEl.value||12)+1;
-    updateDashboard();
-  });
-  document.getElementById('decreaseMonths').addEventListener('click', ()=>{
-    monthsEl.value=Math.max(1,parseInt(monthsEl.value||12)-1);
-    updateDashboard();
-  });
-  monthsEl.addEventListener('change', ()=>updateDashboard());
+function slug(str){ return str.toLowerCase().replace(/\s+/g,'_'); }
+function escapeHtml(str){ return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+/* ---------- Meses ---------- */
+function setupMonthControls(){
+  const inc=document.getElementById('increaseMonths'), dec=document.getElementById('decreaseMonths'), input=document.getElementById('monthsFilter');
+  inc.addEventListener('click',()=>{ input.value=parseInt(input.value)+1; updateDashboard(); });
+  dec.addEventListener('click',()=>{ input.value=Math.max(1,parseInt(input.value)-1); updateDashboard(); });
+  input.addEventListener('change',()=>{ if(parseInt(input.value)<1) input.value=1; updateDashboard(); });
 }
 
+/* ---------- Collapse, toggle y reset ---------- */
 function setupToggleCollapseReset(){
-  const toggle = document.getElementById('toggleSwitch');
-  const collapseBtn = document.getElementById('collapseBtn');
-  const resetBtn = document.getElementById('resetFilters');
-  const sidebar = document.getElementById('sidebar');
-  const collapseIcon = document.getElementById('collapseIcon');
-
-  toggle.addEventListener('click', ()=>{
-    showCompact=!showCompact;
-    toggle.classList.toggle('on',showCompact);
-    toggle.classList.toggle('off',!showCompact);
-    toggle.setAttribute('aria-pressed',String(showCompact));
-    updateCards();
-  });
-
-  collapseBtn.addEventListener('click', ()=>{
+  const sidebar=document.getElementById('sidebar');
+  const collapseBtn=document.getElementById('collapseBtn');
+  collapseBtn.addEventListener('click',()=>{
     sidebar.classList.toggle('collapsed');
-    document.querySelectorAll('.hide-when-collapsed').forEach(el=>el.style.display=sidebar.classList.contains('collapsed')?'none':'block');
-    collapseIcon.innerHTML = sidebar.classList.contains('collapsed')
-      ? `<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>`
-      : `<path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>`;
   });
 
-  resetBtn.addEventListener('click', ()=>{
-    document.getElementById('monthsFilter').value=12;
+  const toggleBtn=document.getElementById('toggleSwitch');
+  toggleBtn.addEventListener('click',()=>{ 
+    showCompact=!showCompact;
+    toggleBtn.classList.toggle('on',showCompact);
+    toggleBtn.classList.toggle('off',!showCompact);
+  });
+
+  document.getElementById('resetFilters').addEventListener('click',()=>{
     ['product','channel','branch'].forEach(k=>{
-      const panel=document.getElementById(k+'Panel');
-      panel.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=(cb.dataset.val==='all'));
       selection[k]='all';
       updateBtnLabel(k);
+      const panel=document.getElementById(k+'Panel');
+      if(panel){
+        panel.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=cb.dataset.val==='all');
+      }
     });
-    showCompact=true; toggle.classList.add('on'); toggle.classList.remove('off');
+    document.getElementById('monthsFilter').value=12;
     updateDashboard();
   });
 }
-
-/* ---------- Helpers ---------- */
-function slug(text){ return text.toLowerCase().replace(/\s+/g,'_').replace(/[^\w\-]+/g,''); }
-function escapeHtml(text){ const div=document.createElement('div'); div.textContent=text; return div.innerHTML; }
-
-window.onload = () => { loadCSV(); };
